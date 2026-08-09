@@ -214,8 +214,11 @@
 
             // Tag ruoli in base al servizio scelto
             let mentions = `<@&963862795890360360> <@&963862193655414805> <@&1099742102184804428> <@&963862191663116318>`;
+
             if (servizio === 'Test Attitudinale' || servizio === 'Visita Psicologica') {
                 mentions = `<@&1059959831143919717>`;
+            } else if (servizio === 'Colloquio') {
+                mentions = `<@&1498075053294620704> <@&1099742102184804428> <@&1312723262270083133>`;
             }
 
             const payload = {
