@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prenotazioni - Croce Rossa</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+            min-height: 100vh;
+            padding: 30px 15px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.12);
+            overflow: hidden;
+        }
+        .header {
+            background: #c8102e;
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+        .header h1 { font-size: 1.6rem; margin-bottom: 5px; }
+        .header p { opacity: 0.9; font-size: 0.95rem; }
+        .form-body { padding: 30px; }
+        label {
+            display: block;
+            font-weight: 600;
+            margin: 16px 0 6px;
+            color: #333;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 12px 14px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border 0.2s;
+        }
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #c8102e;
+        }
+        .row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        @media (max-width: 500px) {
+            .row { grid-template-columns: 1fr; }
+        }
+        button {
+            width: 100%;
+            background: #c8102e;
+            color: white;
+            border: none;
+            padding: 16px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 12px;
+            cursor: pointer;
+            margin-top: 25px;
+            transition: background 0.2s;
+        }
+        button:hover { background: #a00d25; }
+        button:disabled { background: #999; cursor: not-allowed; }
+        #status {
+            margin-top: 20px;
+            padding: 14px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: 600;
+            display: none;
+        }
+        .altro-box { display: none; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📅 Prenotazione</h1>
+            <p>Croce Rossa Italiana - Portale Pubblico</p>
+        </div>
+
+        <div class="form-body">
+            <label>Nome e Cognome *</label>
+            <input type="text" id="nome" placeholder="Es. Tony Stark" required>
+
+            <div class="row">
+                <div>
+                    <label>Data di Nascita *</label>
+                    <input type="date" id="dataNascita" required>
+                </div>
+                <div>
+                    <label>Telefono</label>
+                    <input type="tel" id="telefono" placeholder="Es. 3331234567">
+                </div>
+            </div>
+
+            <label>Discord ID (opzionale)</label>
+            <input type="text" id="discordId" placeholder="Es. 1475551757882383878">
+
+            <div class="row">
+                <div>
+                    <label>Data Richiesta *</label>
+                    <input type="date" id="dataRichiesta" required>
+                </div>
+                <div>
+                    <label>Fascia Oraria *</label>
+                    <select id="fasciaOraria" required>
+                        <option value="">Seleziona...</option>
+                        <option value="08:00 - 10:00">08:00 - 10:00</option>
+                        <option value="10:00 - 12:00">10:00 - 12:00</option>
+                        <option value="12:00 - 14:00">12:00 - 14:00</option>
+                        <option value="14:00 - 16:00">14:00 - 16:00</option>
+                        <option value="16:00 - 18:00">16:00 - 18:00</option>
+                        <option value="18:00 - 20:00">18:00 - 20:00</option>
+                        <option value="20:00 - 22:00">20:00 - 22:00</option>
+                        <option value="Altro">Altro</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="altro-box" id="altraFasciaBox">
+                <label>Specifica fascia oraria</label>
+                <input type="text" id="altraFascia" placeholder="Es. 21:00 - 22:30">
+            </div>
+
+            <label>Servizio Richiesto *</label>
+            <select id="servizio" required>
+                <option value="">Seleziona...</option>
+                <option value="Visita Medica">Visita Medica</option>
+                <option value="Medicazione">Medicazione</option>
+                <option value="Colloquio">Colloquio</option>
+                <option value="Controllo">Controllo</option>
+                <option value="Visita Psicologica">Visita Psicologica</option>
+                <option value="Test Attitudinale">Test Attitudinale</option>
+                <option value="Certificato Anamnestico">Certificato Anamnestico</option>
+                <option value="Altro">Altro</option>
+            </select>
+
+            <div class="altro-box" id="altroServizioBox">
+                <label>Specifica servizio</label>
+                <input type="text" id="altroServizio" placeholder="Es. colloquio">
+            </div>
+
+            <label>Note e Dettagli</label>
+            <textarea id="note" rows="4" placeholder="Eventuali note aggiuntive..."></textarea>
+
+            <button id="btnInvia">📤 Invia Prenotazione</button>
+            <div id="status"></div>
+        </div>
+    </div>
+
+    <script>
+        // ========== WEBHOOK DISCORD PRENOTAZIONI ==========
+        const WEBHOOK_URL = "https://discord.com/api/webhooks/1404031611246481418/SYAH_JiFJTePehOomHD-LMGJAlyDOI30Uw-Fibb96CD2evH8QAF-ffrufioZqIaNxYB8";
+        // =================================================
+
+        document.getElementById('fasciaOraria').addEventListener('change', function() {
+            document.getElementById('altraFasciaBox').style.display = this.value === 'Altro' ? 'block' : 'none';
+        });
+        document.getElementById('servizio').addEventListener('change', function() {
+            document.getElementById('altroServizioBox').style.display = this.value === 'Altro' ? 'block' : 'none';
+        });
+
+        document.getElementById('dataRichiesta').valueAsDate = new Date();
+
+        document.getElementById('btnInvia').addEventListener('click', async () => {
+            const nome = document.getElementById('nome').value.trim();
+            const dataNascita = document.getElementById('dataNascita').value;
+            const telefono = document.getElementById('telefono').value.trim() || '//';
+            const discordIdRaw = document.getElementById('discordId').value.trim();
+            const discordId = discordIdRaw ? `<@${discordIdRaw}>` : 'Non fornito';
+            let dataRichiesta = document.getElementById('dataRichiesta').value;
+            let fascia = document.getElementById('fasciaOraria').value;
+            let servizio = document.getElementById('servizio').value;
+            const note = document.getElementById('note').value.trim() || 'Nessuna nota aggiuntiva.';
+
+            if (!nome || !dataNascita || !dataRichiesta || !fascia || !servizio) {
+                alert('Compila tutti i campi obbligatori (*)');
+                return;
+            }
+
+            if (fascia === 'Altro') {
+                fascia = document.getElementById('altraFascia').value.trim() || 'Non specificata';
+            }
+            if (servizio === 'Altro') {
+                servizio = 'Altro: ' + (document.getElementById('altroServizio').value.trim() || 'Non specificato');
+            }
+
+            const formatDate = (d) => {
+                if (!d) return '—';
+                const [y, m, day] = d.split('-');
+                return `${day}/${m}/${y}`;
+            };
+
+            const now = new Date();
+            const dataOraInvio = now.toLocaleDateString('it-IT') + ' ' + now.toLocaleTimeString('it-IT', {hour: '2-digit', minute:'2-digit'});
+
+            const status = document.getElementById('status');
+            const btn = document.getElementById('btnInvia');
+            btn.disabled = true;
+            status.style.display = 'block';
+            status.style.background = '#fff3cd';
+            status.style.color = '#856404';
+            status.innerHTML = '⏳ Invio in corso...';
+
+            // Tag ruoli in base al servizio scelto
+            let mentions = `<@&963862795890360360> <@&963862193655414805> <@&1099742102184804428> <@&963862191663116318>`;
+            if (servizio === 'Test Attitudinale' || servizio === 'Visita Psicologica') {
+                mentions = `<@&1059959831143919717>`;
+            }
+
+            const payload = {
+                content: mentions,
+                embeds: [{
+                    title: "📅 Nuova Prenotazione Ricevuta",
+                    description: "È stata inviata una nuova richiesta dal portale pubblico.",
+                    color: 0xc8102e,
+                    fields: [
+                        { name: "👤 Paziente", value: nome, inline: true },
+                        { name: "🎂 Data Nascita", value: formatDate(dataNascita), inline: true },
+                        { name: "📞 Telefono", value: telefono, inline: true },
+                        { name: "💬 Discord ID", value: discordId, inline: true },
+                        { name: "📅 Data Richiesta", value: formatDate(dataRichiesta), inline: true },
+                        { name: "⏰ Fascia Oraria", value: fascia, inline: true },
+                        { name: "⚕️ Servizio/i Richiesto/i", value: servizio, inline: false },
+                        { name: "📝 Note e Dettagli", value: note, inline: false }
+                    ],
+                    footer: {
+                        text: `Croce Rossa - Sistema Prenotazioni • ${dataOraInvio}`
+                    }
+                }]
+            };
+
+            try {
+                const response = await fetch(WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (response.ok) {
+                    status.style.background = '#d4edda';
+                    status.style.color = '#155724';
+                    status.innerHTML = '✅ Prenotazione inviata con successo!';
+                    document.getElementById('nome').value = '';
+                    document.getElementById('dataNascita').value = '';
+                    document.getElementById('telefono').value = '';
+                    document.getElementById('discordId').value = '';
+                    document.getElementById('note').value = '';
+                    document.getElementById('fasciaOraria').value = '';
+                    document.getElementById('servizio').value = '';
+                    document.getElementById('altraFasciaBox').style.display = 'none';
+                    document.getElementById('altroServizioBox').style.display = 'none';
+                } else {
+                    throw new Error('Errore durante l\'invio');
+                }
+            } catch (err) {
+                console.error(err);
+                status.style.background = '#f8d7da';
+                status.style.color = '#721c24';
+                status.innerHTML = '❌ Errore: ' + err.message;
+            }
+
+            btn.disabled = false;
+        });
+    </script>
+</body>
+</html>
