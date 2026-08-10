@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestione Prenotazione - Croce Rossa</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+            min-height: 100vh;
+            padding: 30px 15px;
+        }
+        .container {
+            max-width: 520px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.12);
+            overflow: hidden;
+        }
+        .header {
+            background: #c8102e;
+            color: white;
+            padding: 22px;
+            text-align: center;
+        }
+        .content { padding: 28px; }
+        .info {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 18px;
+            margin-bottom: 25px;
+            line-height: 1.7;
+        }
+        .info strong { color: #c8102e; }
+        .buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        button {
+            padding: 14px;
+            font-size: 1rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            color: white;
+        }
+        .btn-accept { background: #28a745; }
+        .btn-accept:hover { background: #218838; }
+        .btn-reject { background: #dc3545; }
+        .btn-reject:hover { background: #c82333; }
+        .btn-send {
+            width: 100%;
+            background: #c8102e;
+            margin-top: 15px;
+        }
+        .btn-send:hover { background: #a00d25; }
+        #acceptBox { display: none; margin-top: 20px; }
+        label { font-weight: 600; display: block; margin-bottom: 6px; }
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+        #status {
+            margin-top: 18px;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 600;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h2>Gestione Prenotazione</h2>
+        </div>
+        <div class="content">
+            <div class="info" id="dettagli"></div>
+
+            <div class="buttons" id="sceltaBox">
+                <button class="btn-accept" onclick="mostraAccetta()">✅ Accetta</button>
+                <button class="btn-reject" onclick="rifiuta()">❌ Rifiuta</button>
+            </div>
+
+            <div id="acceptBox">
+                <label>Orario preciso dell'appuntamento</label>
+                <input type="time" id="orarioPreciso">
+                <button class="btn-send" onclick="inviaConferma()">📤 Invia Conferma</button>
+            </div>
+
+            <div id="status"></div>
+        </div>
+    </div>
+
+    <script>
+        // Webhook della conferma
+        const WEBHOOK_CONFERMA = "https://discord.com/api/webhooks/1504742126511063130/AbB2hRneTeLAv2IVz40MsIhLUugkc55A_wQXukeWGpq34to7U_eQArIePK7lTo0oNz1J";
+
+        // Leggi i dati dall'URL
+        const params = new URLSearchParams(window.location.search);
+        const dati = {
+            nome: params.get('nome') || '—',
+            data: params.get('data') || '—',
+            fascia: params.get('fascia') || '—',
+            servizio: params.get('servizio') || '—',
+            note: params.get('note') || 'Nessuna nota',
+            discord: params.get('discord') || ''
+        };
+
+        // Mostra i dettagli
+        document.getElementById('dettagli').innerHTML = `
+            <strong>👤 Paziente:</strong> ${dati.nome}<br>
+            <strong>📅 Data:</strong> ${dati.data}<br>
+            <strong>⏰ Fascia richiesta:</strong> ${dati.fascia}<br>
+            <strong>⚕️ Servizio:</strong> ${dati.servizio}<br>
+            <strong>📝 Note:</strong> ${dati.note}
+        `;
+
+        function mostraAccetta() {
+            document.getElementById('sceltaBox').style.display = 'none';
+            document.getElementById('acceptBox').style.display = 'block';
+        }
+
+        async function inviaConferma() {
+            const orario = document.getElementById('orarioPreciso').value;
+            if (!orario) {
+                alert('Inserisci l\'orario preciso');
+                return;
+            }
+
+            const status = document.getElementById('status');
+            status.style.display = 'block';
+            status.style.background = '#fff3cd';
+            status.innerHTML = '⏳ Invio conferma...';
+
+            const discordTag = dati.discord ? `<@${dati.discord}>` : 'Non fornito';
+
+            const payload = {
+                embeds: [{
+                    title: "✅ PRENOTAZIONE CONFERMATA",
+                    color: 0x28a745,
+                    fields: [
+                        { name: "👤 Paziente", value: dati.nome, inline: true },
+                        { name: "📅 Data", value: dati.data, inline: true },
+                        { name: "🕐 Orario", value: orario, inline: true },
+                        { name: "⚕️ Servizio", value: dati.servizio, inline: false },
+                        { name: "💬 Discord", value: discordTag, inline: true },
+                        { name: "📝 Note", value: dati.note, inline: false }
+                    ],
+                    footer: { text: "Croce Rossa - Sistema Prenotazioni" }
+                }]
+            };
+
+            try {
+                const res = await fetch(WEBHOOK_CONFERMA, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                if (res.ok) {
+                    status.style.background = '#d4edda';
+                    status.innerHTML = '✅ Conferma inviata con successo!';
+                    document.getElementById('acceptBox').style.display = 'none';
+                } else throw new Error('Errore invio');
+            } catch (e) {
+                status.style.background = '#f8d7da';
+                status.innerHTML = '❌ Errore: ' + e.message;
+            }
+        }
+
+        async function rifiuta() {
+            if (!confirm('Sei sicuro di voler rifiutare questa prenotazione?')) return;
+
+            const status = document.getElementById('status');
+            status.style.display = 'block';
+            status.style.background = '#fff3cd';
+            status.innerHTML = '⏳ Invio rifiuto...';
+
+            const discordTag = dati.discord ? `<@${dati.discord}>` : 'Non fornito';
+
+            const payload = {
+                embeds: [{
+                    title: "❌ PRENOTAZIONE RIFIUTATA",
+                    color: 0xdc3545,
+                    fields: [
+                        { name: "👤 Paziente", value: dati.nome, inline: true },
+                        { name: "📅 Data", value: dati.data, inline: true },
+                        { name: "⏰ Fascia", value: dati.fascia, inline: true },
+                        { name: "⚕️ Servizio", value: dati.servizio, inline: false },
+                        { name: "💬 Discord", value: discordTag, inline: true }
+                    ],
+                    footer: { text: "Croce Rossa - Sistema Prenotazioni" }
+                }]
+            };
+
+            try {
+                const res = await fetch(WEBHOOK_CONFERMA, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                if (res.ok) {
+                    status.style.background = '#d4edda';
+                    status.innerHTML = '✅ Rifiuto inviato.';
+                    document.getElementById('sceltaBox').style.display = 'none';
+                } else throw new Error('Errore invio');
+            } catch (e) {
+                status.style.background = '#f8d7da';
+                status.innerHTML = '❌ Errore: ' + e.message;
+            }
+        }
+    </script>
+</body>
+</html>
