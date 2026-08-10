@@ -41,7 +41,6 @@
             border: 2px solid #ddd;
             border-radius: 10px;
             font-size: 1rem;
-            transition: border 0.2s;
         }
         input:focus, select:focus, textarea:focus {
             outline: none;
@@ -66,7 +65,6 @@
             border-radius: 12px;
             cursor: pointer;
             margin-top: 25px;
-            transition: background 0.2s;
         }
         button:hover { background: #a00d25; }
         button:disabled { background: #999; cursor: not-allowed; }
@@ -159,9 +157,10 @@
     </div>
 
     <script>
-        // ========== WEBHOOK DISCORD PRENOTAZIONI ==========
         const WEBHOOK_URL = "https://discord.com/api/webhooks/1404031611246481418/SYAH_JiFJTePehOomHD-LMGJAlyDOI30Uw-Fibb96CD2evH8QAF-ffrufioZqIaNxYB8";
-        // =================================================
+
+        // ⚠️ IMPORTANTE: cambia questo link con l'indirizzo dove carichi conferma.html
+        const CONFERMA_PAGE = "conferma.html";   // oppure https://tuosito.com/conferma.html
 
         document.getElementById('fasciaOraria').addEventListener('change', function() {
             document.getElementById('altraFasciaBox').style.display = this.value === 'Altro' ? 'block' : 'none';
@@ -204,6 +203,17 @@
             const now = new Date();
             const dataOraInvio = now.toLocaleDateString('it-IT') + ' ' + now.toLocaleTimeString('it-IT', {hour: '2-digit', minute:'2-digit'});
 
+            // Crea link di gestione
+            const params = new URLSearchParams({
+                nome: nome,
+                data: formatDate(dataRichiesta),
+                fascia: fascia,
+                servizio: servizio,
+                note: note,
+                discord: discordIdRaw || ''
+            });
+            const linkConferma = `${CONFERMA_PAGE}?${params.toString()}`;
+
             const status = document.getElementById('status');
             const btn = document.getElementById('btnInvia');
             btn.disabled = true;
@@ -212,9 +222,8 @@
             status.style.color = '#856404';
             status.innerHTML = '⏳ Invio in corso...';
 
-            // Tag ruoli in base al servizio scelto
-            let mentions = `<@&963862795890360360> <@&963862193655414805> <@&1099742102184804428> <@&1312723262270083133>`;
-
+            // Tag ruoli
+            let mentions = `<@&963862795890360360> <@&963862193655414805> <@&1099742102184804428> <@&963862191663116318>`;
             if (servizio === 'Test Attitudinale' || servizio === 'Visita Psicologica') {
                 mentions = `<@&1059959831143919717>`;
             } else if (servizio === 'Colloquio') {
@@ -225,7 +234,7 @@
                 content: mentions,
                 embeds: [{
                     title: "📅 Nuova Prenotazione Ricevuta",
-                    description: "È stata inviata una nuova richiesta dal portale pubblico.",
+                    description: "È stata inviata una nuova richiesta dal portale pubblico.\n\n[✅ **Gestisci Prenotazione**](" + linkConferma + ")",
                     color: 0xc8102e,
                     fields: [
                         { name: "👤 Paziente", value: nome, inline: true },
