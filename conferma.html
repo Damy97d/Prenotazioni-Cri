@@ -65,11 +65,11 @@
             background: #c8102e;
             margin-top: 15px;
         }
-        #acceptBox { display: none; margin-top: 20px; }
+        #acceptBox, #rejectBox { display: none; margin-top: 20px; }
         #mainContent { display: none; }
         #passwordBox { display: none; }
         label { font-weight: 600; display: block; margin-bottom: 6px; margin-top: 12px; }
-        input {
+        input, textarea {
             width: 100%;
             padding: 12px;
             border: 2px solid #ddd;
@@ -116,13 +116,21 @@
 
                 <div class="buttons" id="sceltaBox" style="margin-top:20px;">
                     <button class="btn-accept" onclick="mostraAccetta()">✅ Accetta</button>
-                    <button class="btn-reject" onclick="rifiuta()">❌ Rifiuta</button>
+                    <button class="btn-reject" onclick="mostraRifiuta()">❌ Rifiuta</button>
                 </div>
 
+                <!-- BOX ACCETTA -->
                 <div id="acceptBox">
                     <label>Orario preciso dell'appuntamento</label>
                     <input type="time" id="orarioPreciso">
                     <button class="btn-send" onclick="inviaConferma()">📤 Invia Conferma</button>
+                </div>
+
+                <!-- BOX RIFIUTA -->
+                <div id="rejectBox">
+                    <label>Motivo del rifiuto *</label>
+                    <textarea id="motivoRifiuto" rows="3" placeholder="Es. Orario non disponibile, documenti mancanti..."></textarea>
+                    <button class="btn-send" style="background:#dc3545;" onclick="inviaRifiuto()">📤 Invia Rifiuto</button>
                 </div>
 
                 <div id="status"></div>
@@ -147,18 +155,15 @@
         };
 
         // ========== CONTROLLO ACCESSO ==========
-        // Password richiesta SOLO se il servizio è Colloquio
         const isColloquio = dati.servizio === 'Colloquio';
 
         if (isColloquio) {
-            // Se non ha ancora inserito la password, mostra la schermata
             if (localStorage.getItem('accessoColloquio') === 'ok') {
                 document.getElementById('mainContent').style.display = 'block';
             } else {
                 document.getElementById('passwordBox').style.display = 'block';
             }
         } else {
-            // Per tutti gli altri servizi → accesso libero
             document.getElementById('mainContent').style.display = 'block';
         }
 
@@ -207,7 +212,15 @@
         function mostraAccetta() {
             if (!getFirma()) return;
             document.getElementById('sceltaBox').style.display = 'none';
+            document.getElementById('rejectBox').style.display = 'none';
             document.getElementById('acceptBox').style.display = 'block';
+        }
+
+        function mostraRifiuta() {
+            if (!getFirma()) return;
+            document.getElementById('sceltaBox').style.display = 'none';
+            document.getElementById('acceptBox').style.display = 'none';
+            document.getElementById('rejectBox').style.display = 'block';
         }
 
         async function inviaConferma() {
@@ -232,11 +245,11 @@
                     title: "✅ PRENOTAZIONE CONFERMATA",
                     color: 0x28a745,
                     fields: [
-                        { name: "👤 Paziente", value: dati.nome, inline: true },
+                        { name: "👤 Nome", value: dati.nome, inline: true },
                         { name: "📅 Data", value: dati.data, inline: true },
                         { name: "🕐 Orario", value: orario, inline: true },
                         { name: "⚕️ Servizio", value: dati.servizio, inline: false },
-                        { name: "💬 Discord Paziente", value: discordTag, inline: true },
+                        { name: "💬 Discord Richiedente", value: discordTag, inline: true },
                         { name: "📝 Note", value: dati.note, inline: false },
                         { name: "✍️ Firmato da", value: firma, inline: false }
                     ],
@@ -261,11 +274,15 @@
             }
         }
 
-        async function rifiuta() {
+        async function inviaRifiuto() {
             const firma = getFirma();
             if (!firma) return;
 
-            if (!confirm('Sei sicuro di voler rifiutare questa prenotazione?')) return;
+            const motivo = document.getElementById('motivoRifiuto').value.trim();
+            if (!motivo) {
+                alert('Inserisci il motivo del rifiuto');
+                return;
+            }
 
             const status = document.getElementById('status');
             status.style.display = 'block';
@@ -279,11 +296,12 @@
                     title: "❌ PRENOTAZIONE RIFIUTATA",
                     color: 0xdc3545,
                     fields: [
-                        { name: "👤 Paziente", value: dati.nome, inline: true },
+                        { name: "👤 Nome", value: dati.nome, inline: true },
                         { name: "📅 Data", value: dati.data, inline: true },
                         { name: "⏰ Fascia", value: dati.fascia, inline: true },
                         { name: "⚕️ Servizio", value: dati.servizio, inline: false },
-                        { name: "💬 Discord Paziente", value: discordTag, inline: true },
+                        { name: "💬 Discord Richiedente", value: discordTag, inline: true },
+                        { name: "📝 Motivo del rifiuto", value: motivo, inline: false },
                         { name: "✍️ Firmato da", value: firma, inline: false }
                     ],
                     footer: { text: "Croce Rossa - Sistema Prenotazioni" }
@@ -299,7 +317,7 @@
                 if (res.ok) {
                     status.style.background = '#d4edda';
                     status.innerHTML = '✅ Rifiuto inviato.';
-                    document.getElementById('sceltaBox').style.display = 'none';
+                    document.getElementById('rejectBox').style.display = 'none';
                 } else throw new Error('Errore invio');
             } catch (e) {
                 status.style.background = '#f8d7da';
