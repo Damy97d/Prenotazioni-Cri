@@ -61,7 +61,7 @@
         }
         .btn-send:hover { background: #a00d25; }
         #acceptBox { display: none; margin-top: 20px; }
-        label { font-weight: 600; display: block; margin-bottom: 6px; }
+        label { font-weight: 600; display: block; margin-bottom: 6px; margin-top: 12px; }
         input {
             width: 100%;
             padding: 12px;
@@ -87,7 +87,10 @@
         <div class="content">
             <div class="info" id="dettagli"></div>
 
-            <div class="buttons" id="sceltaBox">
+            <label>Il tuo Discord ID (obbligatorio)</label>
+            <input type="text" id="firmaId" placeholder="Es. 123456789012345678">
+
+            <div class="buttons" id="sceltaBox" style="margin-top:20px;">
                 <button class="btn-accept" onclick="mostraAccetta()">✅ Accetta</button>
                 <button class="btn-reject" onclick="rifiuta()">❌ Rifiuta</button>
             </div>
@@ -103,10 +106,17 @@
     </div>
 
     <script>
-        // Webhook della conferma
         const WEBHOOK_CONFERMA = "https://discord.com/api/webhooks/1504742126511063130/AbB2hRneTeLAv2IVz40MsIhLUugkc55A_wQXukeWGpq34to7U_eQArIePK7lTo0oNz1J";
 
-        // Leggi i dati dall'URL
+        // Carica Discord ID salvato
+        const firmaInput = document.getElementById('firmaId');
+        firmaInput.value = localStorage.getItem('firmaDiscordId') || '';
+
+        // Salva automaticamente quando cambia
+        firmaInput.addEventListener('change', () => {
+            localStorage.setItem('firmaDiscordId', firmaInput.value.trim());
+        });
+
         const params = new URLSearchParams(window.location.search);
         const dati = {
             nome: params.get('nome') || '—',
@@ -117,7 +127,6 @@
             discord: params.get('discord') || ''
         };
 
-        // Mostra i dettagli
         document.getElementById('dettagli').innerHTML = `
             <strong>👤 Paziente:</strong> ${dati.nome}<br>
             <strong>📅 Data:</strong> ${dati.data}<br>
@@ -126,12 +135,27 @@
             <strong>📝 Note:</strong> ${dati.note}
         `;
 
+        function getFirma() {
+            const id = firmaInput.value.trim();
+            if (!id) {
+                alert('Inserisci il tuo Discord ID prima di continuare');
+                return null;
+            }
+            // Salva
+            localStorage.setItem('firmaDiscordId', id);
+            return `<@${id}>`;
+        }
+
         function mostraAccetta() {
+            if (!getFirma()) return;
             document.getElementById('sceltaBox').style.display = 'none';
             document.getElementById('acceptBox').style.display = 'block';
         }
 
         async function inviaConferma() {
+            const firma = getFirma();
+            if (!firma) return;
+
             const orario = document.getElementById('orarioPreciso').value;
             if (!orario) {
                 alert('Inserisci l\'orario preciso');
@@ -150,12 +174,13 @@
                     title: "✅ PRENOTAZIONE CONFERMATA",
                     color: 0x28a745,
                     fields: [
-                        { name: "👤 Nome", value: dati.nome, inline: true },
+                        { name: "👤 Paziente", value: dati.nome, inline: true },
                         { name: "📅 Data", value: dati.data, inline: true },
                         { name: "🕐 Orario", value: orario, inline: true },
                         { name: "⚕️ Servizio", value: dati.servizio, inline: false },
-                        { name: "💬 Discord", value: discordTag, inline: true },
-                        { name: "📝 Note", value: dati.note, inline: false }
+                        { name: "💬 Discord Paziente", value: discordTag, inline: true },
+                        { name: "📝 Note", value: dati.note, inline: false },
+                        { name: "✍️ Firmato da", value: firma, inline: false }
                     ],
                     footer: { text: "Croce Rossa - Sistema Prenotazioni" }
                 }]
@@ -179,6 +204,9 @@
         }
 
         async function rifiuta() {
+            const firma = getFirma();
+            if (!firma) return;
+
             if (!confirm('Sei sicuro di voler rifiutare questa prenotazione?')) return;
 
             const status = document.getElementById('status');
@@ -193,11 +221,12 @@
                     title: "❌ PRENOTAZIONE RIFIUTATA",
                     color: 0xdc3545,
                     fields: [
-                        { name: "👤 Nome", value: dati.nome, inline: true },
+                        { name: "👤 Paziente", value: dati.nome, inline: true },
                         { name: "📅 Data", value: dati.data, inline: true },
                         { name: "⏰ Fascia", value: dati.fascia, inline: true },
                         { name: "⚕️ Servizio", value: dati.servizio, inline: false },
-                        { name: "💬 Discord", value: discordTag, inline: true }
+                        { name: "💬 Discord Paziente", value: discordTag, inline: true },
+                        { name: "✍️ Firmato da", value: firma, inline: false }
                     ],
                     footer: { text: "Croce Rossa - Sistema Prenotazioni" }
                 }]
