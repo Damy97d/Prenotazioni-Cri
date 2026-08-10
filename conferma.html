@@ -67,6 +67,7 @@
         }
         #acceptBox { display: none; margin-top: 20px; }
         #mainContent { display: none; }
+        #passwordBox { display: none; }
         label { font-weight: 600; display: block; margin-bottom: 6px; margin-top: 12px; }
         input {
             width: 100%;
@@ -98,15 +99,15 @@
         </div>
         <div class="content">
 
-            <!-- SCHERMATA PASSWORD -->
+            <!-- SCHERMATA PASSWORD (solo per Colloquio) -->
             <div id="passwordBox">
-                <label>Inserisci la password di accesso</label>
+                <label>Inserisci la password di accesso<br><small>(richiesta solo per Colloquio)</small></label>
                 <input type="password" id="passwordInput" placeholder="Password">
                 <button class="btn-password" onclick="checkPassword()">Accedi</button>
                 <div id="passwordError">Password errata</div>
             </div>
 
-            <!-- CONTENUTO PRINCIPALE (nascosto finché non si inserisce la password) -->
+            <!-- CONTENUTO PRINCIPALE -->
             <div id="mainContent">
                 <div class="info" id="dettagli"></div>
 
@@ -134,11 +135,37 @@
         const WEBHOOK_CONFERMA = "https://discord.com/api/webhooks/1504742126511063130/AbB2hRneTeLAv2IVz40MsIhLUugkc55A_wQXukeWGpq34to7U_eQArIePK7lTo0oNz1J";
         const PASSWORD_CORRETTA = "Dirigenzacri";
 
-        // ========== CONTROLLO PASSWORD ==========
+        // ========== DATI DALL'URL ==========
+        const params = new URLSearchParams(window.location.search);
+        const dati = {
+            nome: params.get('nome') || '—',
+            data: params.get('data') || '—',
+            fascia: params.get('fascia') || '—',
+            servizio: params.get('servizio') || '—',
+            note: params.get('note') || 'Nessuna nota',
+            discord: params.get('discord') || ''
+        };
+
+        // ========== CONTROLLO ACCESSO ==========
+        // Password richiesta SOLO se il servizio è Colloquio
+        const isColloquio = dati.servizio === 'Colloquio';
+
+        if (isColloquio) {
+            // Se non ha ancora inserito la password, mostra la schermata
+            if (localStorage.getItem('accessoColloquio') === 'ok') {
+                document.getElementById('mainContent').style.display = 'block';
+            } else {
+                document.getElementById('passwordBox').style.display = 'block';
+            }
+        } else {
+            // Per tutti gli altri servizi → accesso libero
+            document.getElementById('mainContent').style.display = 'block';
+        }
+
         function checkPassword() {
             const inserita = document.getElementById('passwordInput').value;
             if (inserita === PASSWORD_CORRETTA) {
-                localStorage.setItem('accessoConferma', 'ok');
+                localStorage.setItem('accessoColloquio', 'ok');
                 document.getElementById('passwordBox').style.display = 'none';
                 document.getElementById('mainContent').style.display = 'block';
             } else {
@@ -146,13 +173,6 @@
             }
         }
 
-        // Se la password è già stata inserita in passato, salta la schermata
-        if (localStorage.getItem('accessoConferma') === 'ok') {
-            document.getElementById('passwordBox').style.display = 'none';
-            document.getElementById('mainContent').style.display = 'block';
-        }
-
-        // Premi Invio per confermare la password
         document.getElementById('passwordInput').addEventListener('keyup', function(e) {
             if (e.key === 'Enter') checkPassword();
         });
@@ -165,17 +185,7 @@
             localStorage.setItem('firmaDiscordId', firmaInput.value.trim());
         });
 
-        // ========== DATI PRENOTAZIONE ==========
-        const params = new URLSearchParams(window.location.search);
-        const dati = {
-            nome: params.get('nome') || '—',
-            data: params.get('data') || '—',
-            fascia: params.get('fascia') || '—',
-            servizio: params.get('servizio') || '—',
-            note: params.get('note') || 'Nessuna nota',
-            discord: params.get('discord') || ''
-        };
-
+        // ========== DETTAGLI ==========
         document.getElementById('dettagli').innerHTML = `
             <strong>👤 Paziente:</strong> ${dati.nome}<br>
             <strong>📅 Data:</strong> ${dati.data}<br>
@@ -222,11 +232,11 @@
                     title: "✅ PRENOTAZIONE CONFERMATA",
                     color: 0x28a745,
                     fields: [
-                        { name: "👤 Nome", value: dati.nome, inline: true },
+                        { name: "👤 Paziente", value: dati.nome, inline: true },
                         { name: "📅 Data", value: dati.data, inline: true },
                         { name: "🕐 Orario", value: orario, inline: true },
                         { name: "⚕️ Servizio", value: dati.servizio, inline: false },
-                        { name: "💬 Discord Richiedente", value: discordTag, inline: true },
+                        { name: "💬 Discord Paziente", value: discordTag, inline: true },
                         { name: "📝 Note", value: dati.note, inline: false },
                         { name: "✍️ Firmato da", value: firma, inline: false }
                     ],
@@ -269,11 +279,11 @@
                     title: "❌ PRENOTAZIONE RIFIUTATA",
                     color: 0xdc3545,
                     fields: [
-                        { name: "👤 Nome", value: dati.nome, inline: true },
+                        { name: "👤 Paziente", value: dati.nome, inline: true },
                         { name: "📅 Data", value: dati.data, inline: true },
                         { name: "⏰ Fascia", value: dati.fascia, inline: true },
                         { name: "⚕️ Servizio", value: dati.servizio, inline: false },
-                        { name: "💬 Discord Richiedente", value: discordTag, inline: true },
+                        { name: "💬 Discord Paziente", value: discordTag, inline: true },
                         { name: "✍️ Firmato da", value: firma, inline: false }
                     ],
                     footer: { text: "Croce Rossa - Sistema Prenotazioni" }
