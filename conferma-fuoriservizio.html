@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestisci Fuori Servizio – CRI</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+        .card {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 18px;
+            padding: 32px 28px;
+            width: 100%;
+            max-width: 520px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+        .logo img { height: 42px; }
+        h1 {
+            font-size: 1.35rem;
+            text-align: center;
+            color: #f1f5f9;
+            margin-bottom: 6px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #94a3b8;
+            font-size: 0.9rem;
+            margin-bottom: 22px;
+        }
+        .dettaglio {
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 18px 16px;
+            line-height: 1.75;
+            margin-bottom: 18px;
+            font-size: 0.95rem;
+        }
+        .dettaglio strong { color: #fca5a5; }
+        .dettaglio .meta { color: #94a3b8; font-size: 0.85rem; margin-top: 8px; }
+        label {
+            display: block;
+            font-weight: 600;
+            color: #cbd5e1;
+            margin-bottom: 6px;
+            font-size: 0.9rem;
+        }
+        input[type="password"], textarea {
+            width: 100%;
+            padding: 12px 14px;
+            border-radius: 10px;
+            border: 2px solid #334155;
+            background: #0f172a;
+            color: #e2e8f0;
+            font-size: 1rem;
+            margin-bottom: 12px;
+        }
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #c8102e;
+        }
+        textarea { min-height: 70px; resize: vertical; }
+        .pwd-wrap { position: relative; }
+        .pwd-wrap input { padding-right: 44px; }
+        .pwd-toggle {
+            position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+            background: none; border: none; color: #94a3b8; cursor: pointer;
+            padding: 4px 6px; font-size: 1.1rem;
+        }
+        .pwd-toggle:hover { color: #fca5a5; }
+        .btn {
+            width: 100%;
+            border: none;
+            padding: 14px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .btn-login { background: #c8102e; color: white; margin-top: 6px; }
+        .btn-login:hover { background: #a00d25; }
+        .btn-row { display: flex; gap: 12px; margin-top: 8px; }
+        .btn-approva { flex: 1; background: #16a34a; color: white; }
+        .btn-approva:hover { background: #15803d; }
+        .btn-rifiuta { flex: 1; background: #c8102e; color: white; }
+        .btn-rifiuta:hover { background: #a00d25; }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .error {
+            color: #fca5a5;
+            font-weight: 600;
+            text-align: center;
+            margin-top: 12px;
+            display: none;
+        }
+        .status {
+            margin-top: 16px;
+            padding: 12px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: 600;
+            display: none;
+        }
+        .hidden { display: none !important; }
+        .badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+        .badge-attesa { background: rgba(245,158,11,0.2); color: #fbbf24; }
+        .badge-ok { background: rgba(22,163,74,0.2); color: #4ade80; }
+        .badge-no { background: rgba(200,16,46,0.2); color: #fca5a5; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="logo">
+            <img src="https://upload.wikimedia.org/wikipedia/it/4/4a/Emblema_CRI.svg" alt="CRI">
+        </div>
+        <h1>Gestisci Fuori Servizio</h1>
+        <p class="subtitle">Croce Rossa Italiana • Area Responsabili</p>
+
+        <!-- Password -->
+        <div id="passwordBox">
+            <label>Password Dirigenza</label>
+            <div class="pwd-wrap">
+                <input type="password" id="passwordInput" placeholder="DirigenzaCRI" autocomplete="current-password">
+                <button type="button" class="pwd-toggle" onclick="togglePwd()" title="Mostra/nascondi"><i class="fas fa-eye" id="pwdIcon"></i></button>
+            </div>
+            <button class="btn btn-login" onclick="checkPassword()">Accedi</button>
+            <div class="error" id="passwordError">Password errata</div>
+        </div>
+
+        <!-- Contenuto gestione -->
+        <div id="contentBox" class="hidden">
+            <div class="dettaglio" id="dettaglio"></div>
+
+            <label>Il tuo Nome (firma) *</label>
+            <input type="text" id="firmaNome" placeholder="Es. Mario">
+            <label>Il tuo Cognome (firma) *</label>
+            <input type="text" id="firmaCognome" placeholder="Es. Rossi">
+            <label>Il tuo Discord ID (firma) *</label>
+            <input type="text" id="firmaDiscord" placeholder="123456789012345678">
+
+            <label>Nota del responsabile (opzionale)</label>
+            <textarea id="nota" placeholder="Nota da allegare alla conferma..."></textarea>
+
+            <div class="btn-row">
+                <button class="btn btn-approva" id="btnApprova" onclick="inviaEsito('approvato')">✅ Approva</button>
+                <button class="btn btn-rifiuta" id="btnRifiuta" onclick="inviaEsito('rifiutato')">❌ Rifiuta</button>
+            </div>
+            <div class="status" id="status"></div>
+        </div>
+    </div>
+
+<script>
+const WEBHOOK_FUORISERVIZIO = "https://discord.com/api/webhooks/1536994826631782450/HMqHYmSPWDNXKnrhK12iETnPyUeHXSZqByFvgm9Po5UfC1mfGeEWfJ2VE7zaovbdGG79";
+const FS_TAGS = "<@&1099742102184804428> <@&1312723262270083133>";
+const PASS_DIRIGENZA = "DirigenzaCRI";
+
+const params = new URLSearchParams(window.location.search);
+const req = {
+    id: params.get("id") || params.get("gestisciFS") || "",
+    nome: params.get("nome") || "",
+    cognome: params.get("cognome") || "",
+    discord: params.get("discord") || "",
+    data: params.get("data") || "",
+    oraInizio: params.get("oraInizio") || "",
+    oraFine: params.get("oraFine") || "",
+    note: params.get("note") || "",
+    ricevuta: params.get("ricevuta") || ""
+};
+
+function formatDate(val) {
+    if (!val) return "—";
+    if (/^\d{4}-\d{2}-\d{2}$/.test(val)) {
+        const [y, m, d] = val.split("-");
+        return d + "/" + m + "/" + y;
+    }
+    return val;
+}
+
+function togglePwd() {
+    const inp = document.getElementById("passwordInput");
+    const icon = document.getElementById("pwdIcon");
+    if (inp.type === "password") {
+        inp.type = "text";
+        icon.className = "fas fa-eye-slash";
+    } else {
+        inp.type = "password";
+        icon.className = "fas fa-eye";
+    }
+}
+
+function checkPassword() {
+    const val = document.getElementById("passwordInput").value;
+    if (val === PASS_DIRIGENZA || val === "DirigenzaCRI") {
+        try { localStorage.setItem("accessoDirigenza", "ok"); } catch(e) {}
+        document.getElementById("passwordBox").classList.add("hidden");
+        document.getElementById("contentBox").classList.remove("hidden");
+        document.getElementById("passwordError").style.display = "none";
+        renderDettaglio();
+    } else {
+        document.getElementById("passwordError").style.display = "block";
+    }
+}
+
+function renderDettaglio() {
+    const el = document.getElementById("dettaglio");
+    if (!req.nome && !req.cognome) {
+        el.innerHTML = '<span style="color:#fca5a5;">Dati richiesta mancanti o link non valido.</span>';
+        document.getElementById("btnApprova").disabled = true;
+        document.getElementById("btnRifiuta").disabled = true;
+        return;
+    }
+    el.innerHTML = `
+        <strong>Operatore:</strong> ${escapeHtml(req.nome)} ${escapeHtml(req.cognome)}<br>
+        <strong>Discord:</strong> ${req.discord ? "&lt;@" + escapeHtml(req.discord) + "&gt;" : "—"}<br>
+        <strong>Data:</strong> ${formatDate(req.data)}<br>
+        <strong>Orario:</strong> ${escapeHtml(req.oraInizio || "—")} → ${escapeHtml(req.oraFine || "—")}<br>
+        <strong>Note:</strong> ${escapeHtml(req.note || "—")}<br>
+        <div class="meta">ID: ${escapeHtml(req.id || "—")} ${req.ricevuta ? "• Ricevuta: " + escapeHtml(req.ricevuta) : ""}</div>
+    `;
+}
+
+function escapeHtml(s) {
+    return String(s || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+}
+
+async function inviaEsito(esito) {
+    if (!req.nome) {
+        alert("Dati richiesta mancanti");
+        return;
+    }
+    const nota = (document.getElementById("nota").value || "").trim();
+    const fNome = (document.getElementById("firmaNome").value || "").trim();
+    const fCognome = (document.getElementById("firmaCognome").value || "").trim();
+    const fDiscord = (document.getElementById("firmaDiscord").value || "").trim();
+    if (!fNome || !fCognome) { alert("Inserisci il tuo Nome e Cognome per la firma"); return; }
+    if (!fDiscord || !/^\d{17,20}$/.test(fDiscord)) { alert("Inserisci un Discord ID valido per la firma"); return; }
+
+    // salva per prossime volte
+    try {
+        localStorage.setItem("mieiDatiCRI", JSON.stringify({ nome: fNome, cognome: fCognome, discord: fDiscord }));
+        localStorage.setItem("licenziaNomeFirma", fNome);
+        localStorage.setItem("licenziaCognomeFirma", fCognome);
+        localStorage.setItem("licenziaFirmaId", fDiscord);
+        localStorage.setItem("medicoNome", fNome + " " + fCognome);
+    } catch (e) {}
+
+    const status = document.getElementById("status");
+    const btnA = document.getElementById("btnApprova");
+    const btnR = document.getElementById("btnRifiuta");
+    btnA.disabled = true;
+    btnR.disabled = true;
+    status.style.display = "block";
+    status.style.background = "#fff3cd";
+    status.style.color = "#1a1a2e";
+    status.innerHTML = "⏳ Invio conferma...";
+
+    const now = new Date();
+    const dataOra = now.toLocaleDateString("it-IT") + " " + now.toLocaleTimeString("it-IT", { hour: "2-digit", minute: "2-digit" });
+    const approvato = esito === "approvato";
+    const titolo = approvato ? "✅ Fuori Servizio APPROVATO" : "❌ Fuori Servizio RIFIUTATO";
+    const colore = approvato ? 0x16a34a : 0xc8102e;
+    const firmaResponsabile = "**" + fNome + " " + fCognome + "**\n<@" + fDiscord + ">";
+
+    try {
+        const res = await fetch(WEBHOOK_FUORISERVIZIO, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                content: req.discord ? ("<@" + req.discord + ">") : "",
+                allowed_mentions: { parse: ["users"] },
+                embeds: [{
+                    title: titolo,
+                    description: approvato
+                        ? "La richiesta di fuori servizio è stata **approvata** dalla Dirigenza."
+                        : "La richiesta di fuori servizio è stata **rifiutata** dalla Dirigenza.",
+                    color: colore,
+                    fields: [
+                        { name: "👤 Operatore", value: "**" + req.nome + " " + req.cognome + "**", inline: true },
+                        { name: "💬 Discord", value: req.discord ? "<@" + req.discord + ">" : "—", inline: true },
+                        { name: "📅 Data", value: formatDate(req.data), inline: true },
+                        { name: "⏰ Orario", value: "**" + (req.oraInizio || "—") + "** → **" + (req.oraFine || "—") + "**", inline: true },
+                        { name: "📋 Esito", value: approvato ? "✅ Approvato" : "❌ Rifiutato", inline: true },
+                        { name: "📝 Nota responsabile", value: nota || "Nessuna nota", inline: false },
+                        { name: "✍️ Firmato da", value: firmaResponsabile, inline: false }
+                    ],
+                    footer: { text: "CRI • Fuori Servizio • " + dataOra },
+                    timestamp: new Date().toISOString()
+                }]
+            })
+        });
+        if (res.ok || res.status === 204) {
+            status.style.background = "#d4edda";
+            status.innerHTML = approvato
+                ? "✅ Approvazione inviata su Discord!"
+                : "✅ Rifiuto inviato su Discord!";
+            // aggiorna badge visuale
+            const det = document.getElementById("dettaglio");
+            det.innerHTML += '<br><span class="badge ' + (approvato ? "badge-ok" : "badge-no") + '">' +
+                (approvato ? "✅ Approvato" : "❌ Rifiutato") + "</span>";
+        } else {
+            throw new Error("Errore webhook (" + res.status + ")");
+        }
+    } catch (e) {
+        status.style.background = "#f8d7da";
+        status.innerHTML = "❌ " + e.message;
+        btnA.disabled = false;
+        btnR.disabled = false;
+    }
+}
+
+// Auto-login se già autenticato in questo browser
+function prefillFirma() {
+    try {
+        let d = null;
+        try { d = JSON.parse(localStorage.getItem("mieiDatiCRI") || "null"); } catch(e) {}
+        const n = (d && d.nome) || localStorage.getItem("licenziaNomeFirma") || "";
+        const c = (d && d.cognome) || localStorage.getItem("licenziaCognomeFirma") || "";
+        const i = (d && d.discord) || localStorage.getItem("licenziaFirmaId") || "";
+        const elN = document.getElementById("firmaNome");
+        const elC = document.getElementById("firmaCognome");
+        const elI = document.getElementById("firmaDiscord");
+        if (elN && !elN.value) elN.value = n;
+        if (elC && !elC.value) elC.value = c;
+        if (elI && !elI.value) elI.value = i;
+    } catch (e) {}
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    const inp = document.getElementById("passwordInput");
+    if (inp) {
+        inp.addEventListener("keyup", e => { if (e.key === "Enter") checkPassword(); });
+        inp.focus();
+    }
+    prefillFirma();
+    try {
+        if (localStorage.getItem("accessoDirigenza") === "ok") {
+            document.getElementById("passwordBox").classList.add("hidden");
+            document.getElementById("contentBox").classList.remove("hidden");
+            renderDettaglio();
+            prefillFirma();
+        }
+    } catch (e) {}
+});
+</script>
+</body>
+</html>
