@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestione Prenotazione – CRI</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: system-ui, sans-serif; background: #f0f2f5; padding: 24px 12px; }
+        .container { max-width: 520px; margin: 0 auto; background: white; border-radius: 16px; box-shadow: 0 10px 40px rgba(0,0,0,0.12); overflow: hidden; }
+        .header { background: #c8102e; color: white; padding: 22px; text-align: center; }
+        .content { padding: 28px; }
+        .info { background: #f8f9fa; border-radius: 12px; padding: 18px; margin-bottom: 25px; line-height: 1.7; }
+        .info strong { color: #c8102e; }
+        .buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+        button { padding: 14px; font-size: 1rem; font-weight: 600; border: none; border-radius: 10px; cursor: pointer; color: white; }
+        .btn-accept { background: #28a745; }
+        .btn-reject { background: #dc3545; }
+        .btn-send { width: 100%; background: #c8102e; margin-top: 15px; }
+        .btn-password { width: 100%; background: #c8102e; margin-top: 15px; }
+        #acceptBox, #rejectBox { display: none; margin-top: 20px; }
+        #mainContent { display: none; }
+        #passwordBox { display: none; }
+        label { font-weight: 600; display: block; margin-bottom: 6px; margin-top: 12px; }
+        input, textarea { width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 1rem; }
+        #status { margin-top: 18px; padding: 12px; border-radius: 8px; text-align: center; font-weight: 600; display: none; }
+        #passwordError { color: #dc3545; margin-top: 10px; font-weight: 600; display: none; }
+        .hint { color: #64748b; font-size: 0.85rem; margin-top: 4px; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header"><h2>Gestione Prenotazione</h2></div>
+    <div class="content">
+        <div id="passwordBox">
+            <label>Inserisci la password di accesso<br><small>(richiesta solo per Colloquio)</small></label>
+            <input type="password" id="passwordInput" placeholder="Password">
+            <button class="btn-password" onclick="checkPassword()">Accedi</button>
+            <div id="passwordError">Password errata</div>
+        </div>
+        <div id="mainContent">
+            <div class="info" id="dettagli"></div>
+            <label>Nome e Cognome gestore</label>
+            <input type="text" id="firmaNome" placeholder="Es. Mario Rossi">
+            <label>Il tuo Discord ID</label>
+            <input type="text" id="firmaId" placeholder="Es. 123456789012345678">
+            <p class="hint">Se apri la gestione dal sito Area Personale, i dati si compilano da soli.</p>
+            <div class="buttons" id="sceltaBox" style="margin-top:20px;">
+                <button class="btn-accept" onclick="mostraAccetta()">✅ Accetta</button>
+                <button class="btn-reject" onclick="mostraRifiuta()">❌ Rifiuta</button>
+            </div>
+            <div id="acceptBox">
+                <label>Orario preciso dell'appuntamento</label>
+                <input type="time" id="orarioPreciso">
+                <button class="btn-send" onclick="inviaConferma()">📤 Invia Conferma</button>
+            </div>
+            <div id="rejectBox">
+                <label>Motivo del rifiuto *</label>
+                <textarea id="motivoRifiuto" rows="3" placeholder="Es. Orario non disponibile..."></textarea>
+                <button class="btn-send" style="background:#dc3545;" onclick="inviaRifiuto()">📤 Invia Rifiuto</button>
+            </div>
+            <div id="status"></div>
+        </div>
+    </div>
+</div>
+<script>
+const WEBHOOK_CONFERMA = "https://discord.com/api/webhooks/1536335115553349743/qtykDPzOGG42FuSghhiHL0P8eqgYr6omBBlFJ9ThktDolJreiUjh8MaiQm9boqv3cPdS";
+const PASSWORD_CORRETTA = "ColloquioCRI";
+
+const params = new URLSearchParams(window.location.search);
+const dati = {
+    nome: params.get('nome') || '—',
+    data: params.get('data') || '—',
+    fascia: params.get('fascia') || '—',
+    servizio: params.get('servizio') || '—',
+    note: params.get('note') || 'Nessuna nota',
+    discord: params.get('discord') || '',
+    id: params.get('id') || ''
+};
+const gestore = {
+    nome: params.get('gestoreNome') || '',
+    cognome: params.get('gestoreCognome') || '',
+    discord: params.get('gestoreDiscord') || ''
+};
+
+const isColloquio = dati.servizio === 'Colloquio';
+if (isColloquio) {
+    if (localStorage.getItem('accessoColloquio') === 'ok') {
+        document.getElementById('mainContent').style.display = 'block';
+    } else {
+        document.getElementById('passwordBox').style.display = 'block';
+    }
+} else {
+    document.getElementById('mainContent').style.display = 'block';
+}
+
+function checkPassword() {
+    if (document.getElementById('passwordInput').value === PASSWORD_CORRETTA) {
+        localStorage.setItem('accessoColloquio', 'ok');
+        document.getElementById('passwordBox').style.display = 'none';
+        document.getElementById('mainContent').style.display = 'block';
+    } else {
+        document.getElementById('passwordError').style.display = 'block';
+    }
+}
+document.getElementById('passwordInput').addEventListener('keyup', function(e) {
+    if (e.key === 'Enter') checkPassword();
+});
+
+const firmaNome = document.getElementById('firmaNome');
+const firmaInput = document.getElementById('firmaId');
+const nomeCompleto = ((gestore.nome || '') + ' ' + (gestore.cognome || '')).trim();
+firmaNome.value = nomeCompleto || localStorage.getItem('firmaNomeGestore') || '';
+firmaInput.value = gestore.discord || localStorage.getItem('firmaDiscordId') || '';
+firmaNome.addEventListener('change', () => localStorage.setItem('firmaNomeGestore', firmaNome.value.trim()));
+firmaInput.addEventListener('change', () => localStorage.setItem('firmaDiscordId', firmaInput.value.trim()));
+
+document.getElementById('dettagli').innerHTML =
+    '<strong>👤 Paziente:</strong> ' + dati.nome + '<br>' +
+    '<strong>📅 Data:</strong> ' + dati.data + '<br>' +
+    '<strong>⏰ Fascia richiesta:</strong> ' + dati.fascia + '<br>' +
+    '<strong>⚕️ Servizio:</strong> ' + dati.servizio + '<br>' +
+    '<strong>📝 Note:</strong> ' + dati.note;
+
+function getFirma() {
+    const nome = firmaNome.value.trim();
+    const id = firmaInput.value.trim();
+    if (!nome && !id) {
+        alert('Inserisci nome/cognome o Discord ID del gestore');
+        return null;
+    }
+    if (nome) localStorage.setItem('firmaNomeGestore', nome);
+    if (id) localStorage.setItem('firmaDiscordId', id);
+    if (nome && id) return nome + ' (<@' + id + '>)';
+    if (id) return '<@' + id + '>';
+    return nome;
+}
+
+function mostraAccetta() {
+    if (!getFirma()) return;
+    document.getElementById('sceltaBox').style.display = 'none';
+    document.getElementById('rejectBox').style.display = 'none';
+    document.getElementById('acceptBox').style.display = 'block';
+}
+function mostraRifiuta() {
+    if (!getFirma()) return;
+    document.getElementById('sceltaBox').style.display = 'none';
+    document.getElementById('acceptBox').style.display = 'none';
+    document.getElementById('rejectBox').style.display = 'block';
+}
+
+async function inviaConferma() {
+    const firma = getFirma();
+    if (!firma) return;
+    const orario = document.getElementById('orarioPreciso').value;
+    if (!orario) { alert('Inserisci l\'orario preciso'); return; }
+    const status = document.getElementById('status');
+    status.style.display = 'block';
+    status.style.background = '#fff3cd';
+    status.innerHTML = '⏳ Invio...';
+    const discordTag = dati.discord ? '<@' + dati.discord + '>' : 'Non fornito';
+    const payload = {
+        content: dati.discord ? '<@' + dati.discord + '>' : '',
+        embeds: [{
+            title: '✅ PRENOTAZIONE CONFERMATA',
+            color: 0x28a745,
+            fields: [
+                { name: '👤 Nome', value: dati.nome, inline: true },
+                { name: '📅 Data', value: dati.data, inline: true },
+                { name: '🕐 Orario', value: orario, inline: true },
+                { name: '⚕️ Servizio', value: dati.servizio, inline: false },
+                { name: '💬 Discord Richiedente', value: discordTag, inline: true },
+                { name: '📝 Note', value: dati.note, inline: false },
+                { name: '✍️ Gestita da', value: firma, inline: false },
+                { name: '🏥 Indicazioni', value: '**Si rechi in ospedale (CIV. 794) per il suo appuntamento**', inline: false }
+            ],
+            footer: { text: 'Croce Rossa - Sistema Prenotazioni' }
+        }]
+    };
+    try {
+        const res = await fetch(WEBHOOK_CONFERMA, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+        if (!res.ok) throw new Error('Errore invio');
+        status.style.background = '#d4edda';
+        status.innerHTML = '✅ Conferma inviata con successo!';
+        document.getElementById('acceptBox').style.display = 'none';
+    } catch (e) {
+        status.style.background = '#f8d7da';
+        status.innerHTML = '❌ Errore: ' + e.message;
+    }
+}
+
+async function inviaRifiuto() {
+    const firma = getFirma();
+    if (!firma) return;
+    const motivo = document.getElementById('motivoRifiuto').value.trim();
+    if (!motivo) { alert('Inserisci il motivo del rifiuto'); return; }
+    const status = document.getElementById('status');
+    status.style.display = 'block';
+    status.style.background = '#fff3cd';
+    status.innerHTML = '⏳ Invio...';
+    const discordTag = dati.discord ? '<@' + dati.discord + '>' : 'Non fornito';
+    const payload = {
+        content: dati.discord ? '<@' + dati.discord + '>' : '',
+        embeds: [{
+            title: '❌ PRENOTAZIONE RIFIUTATA',
+            color: 0xdc3545,
+            fields: [
+                { name: '👤 Nome', value: dati.nome, inline: true },
+                { name: '📅 Data', value: dati.data, inline: true },
+                { name: '⏰ Fascia', value: dati.fascia, inline: true },
+                { name: '⚕️ Servizio', value: dati.servizio, inline: false },
+                { name: '💬 Discord Richiedente', value: discordTag, inline: true },
+                { name: '📌 Motivo', value: motivo, inline: false },
+                { name: '✍️ Gestita da', value: firma, inline: false }
+            ],
+            footer: { text: 'Croce Rossa - Sistema Prenotazioni' }
+        }]
+    };
+    try {
+        const res = await fetch(WEBHOOK_CONFERMA, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+        if (!res.ok) throw new Error('Errore invio');
+        status.style.background = '#d4edda';
+        status.innerHTML = '✅ Rifiuto inviato con successo!';
+        document.getElementById('rejectBox').style.display = 'none';
+    } catch (e) {
+        status.style.background = '#f8d7da';
+        status.innerHTML = '❌ Errore: ' + e.message;
+    }
+}
+</script>
+</body>
+</html>
