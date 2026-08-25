@@ -1,0 +1,3439 @@
+<!DOCTYPE html>
+<html lang="it">
+<!-- CRI – solo homepage pubblica: Home, Prenota, Ordini Farmacia, Login estetico -->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Croce Rossa Italiana</title>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; color: #1a1a2e; scroll-behavior: smooth; }
+
+        .topbar { background: #c8102e; color: white; text-align: center; padding: 8px; font-size: 0.9rem; font-weight: 600; }
+        .navbar {
+            background: #0f172a; display: flex; align-items: center; justify-content: space-between;
+            padding: 0 30px; height: 70px; position: sticky; top: 0; z-index: 100;
+        }
+        .logo { display: flex; align-items: center; gap: 12px; color: white; font-weight: 700; font-size: 1.1rem; text-decoration: none; cursor: pointer; }
+        .logo img { height: 38px; }
+        .nav-links { display: flex; gap: 22px; list-style: none; flex-wrap: wrap; }
+        .nav-links a { color: #cbd5e1; text-decoration: none; font-weight: 500; font-size: 0.9rem; cursor: pointer; }
+        .nav-links a:hover, .nav-links a.active { color: white; }
+        .btn-area {
+            background: #c8102e; color: white; padding: 10px 18px; border-radius: 8px;
+            text-decoration: none; font-weight: 600; font-size: 0.85rem; border: none; cursor: pointer;
+        }
+
+        .page { display: none; }
+        .page.active { display: block; }
+
+        .hero {
+            height: 85vh; background: linear-gradient(rgba(15,23,42,0.7), rgba(15,23,42,0.75)),
+            url('https://images.unsplash.com/photo-1516549655169-df83a0774514?w=1600') center/cover no-repeat;
+            display: flex; align-items: center; padding: 0 80px; color: white;
+        }
+        .hero-content { max-width: 650px; }
+        .badge { display: inline-block; background: rgba(200,16,46,0.2); border: 1px solid rgba(200,16,46,0.5); color: #fca5a5; padding: 6px 14px; border-radius: 20px; font-size: 0.85rem; margin-bottom: 20px; }
+        .hero h1 { font-size: 3.2rem; line-height: 1.15; margin-bottom: 18px; }
+        .hero h1 span { color: #c8102e; }
+        .hero p { font-size: 1.1rem; color: #cbd5e1; margin-bottom: 30px; line-height: 1.6; }
+        .hero-btns { display: flex; gap: 15px; flex-wrap: wrap; }
+        .btn-primary { background: #c8102e; color: white; padding: 14px 28px; border-radius: 10px; font-weight: 600; border: none; cursor: pointer; font-size: 1rem; display: inline-flex; align-items: center; gap: 8px; }
+        .btn-outline { border: 2px solid white; color: white; padding: 12px 26px; border-radius: 10px; font-weight: 600; cursor: pointer; background: transparent; font-size: 1rem; }
+
+        .stats { background: #0f172a; display: grid; grid-template-columns: repeat(4, 1fr); padding: 40px 80px; text-align: center; color: white; }
+        .stat-num { font-size: 2.4rem; font-weight: 800; color: #c8102e; }
+        .stat-label { font-size: 0.85rem; color: #94a3b8; margin-top: 6px; text-transform: uppercase; letter-spacing: 1px; }
+
+        .section { padding: 80px; }
+        .section-title { text-align: center; margin-bottom: 50px; }
+        .section-title h2 { font-size: 2.2rem; margin-bottom: 12px; }
+        .section-title p { color: #64748b; max-width: 550px; margin: 0 auto; }
+
+        .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; }
+        .card { background: white; border: 1px solid #e2e8f0; border-radius: 16px; padding: 32px; transition: 0.25s; }
+        .card:hover { box-shadow: 0 15px 40px rgba(0,0,0,0.08); transform: translateY(-4px); }
+        .card-icon { width: 54px; height: 54px; background: #fee2e2; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; color: #c8102e; margin-bottom: 18px; }
+        .card h3 { margin-bottom: 10px; }
+        .card p { color: #64748b; font-size: 0.95rem; line-height: 1.6; margin-bottom: 18px; }
+        .card span.link { color: #c8102e; font-weight: 600; cursor: pointer; }
+
+        /* FORM STYLES */
+        .form-wrapper { max-width: 720px; margin: 0 auto; background: white; border-radius: 16px; box-shadow: 0 10px 40px rgba(0,0,0,0.08); overflow: hidden; }
+        .form-header { background: #c8102e; color: white; padding: 28px; text-align: center; }
+        .form-header h2 { font-size: 1.5rem; margin-bottom: 6px; }
+        .form-body { padding: 32px; }
+        .form-body label { display: block; font-weight: 600; margin: 16px 0 6px; }
+        .form-body input, .form-body select, .form-body textarea {
+            width: 100%; padding: 12px 14px; border: 2px solid #ddd; border-radius: 10px; font-size: 1rem;
+        }
+        .form-body input:focus, .form-body select:focus, .form-body textarea:focus { outline: none; border-color: #c8102e; }
+        .row-form { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .altro-box { display: none; margin-top: 10px; }
+        .btn-invia { width: 100%; background: #c8102e; color: white; border: none; padding: 16px; font-size: 1.1rem; font-weight: 600; border-radius: 12px; cursor: pointer; margin-top: 25px; }
+        .btn-invia:hover { background: #a00d25; }
+        .btn-invia:disabled { background: #999; }
+        .status-box { margin-top: 20px; padding: 14px; border-radius: 10px; text-align: center; font-weight: 600; display: none; }
+
+        /* FARMACI ORDER */
+        .farmaci-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+        .farmaco-item {
+            display: flex; align-items: center; gap: 10px; background: #f8fafc;
+            border: 1px solid #e2e8f0; border-radius: 10px; padding: 10px 14px;
+        }
+        .farmaco-item input[type="checkbox"] { width: 18px; height: 18px; accent-color: #c8102e; }
+        .farmaco-item label { margin: 0; font-weight: 500; flex: 1; cursor: pointer; }
+        .farmaco-item .prezzo { color: #c8102e; font-weight: 700; font-size: 0.9rem; }
+        .farmaco-item input[type="number"] {
+            width: 60px; padding: 6px; border: 1px solid #ddd; border-radius: 6px; text-align: center;
+        }
+        .totale-box {
+            background: #0f172a; color: white; padding: 18px 24px; border-radius: 12px;
+            display: flex; justify-content: space-between; align-items: center; margin-top: 20px; font-size: 1.2rem;
+        }
+        .totale-box span { color: #fca5a5; font-weight: 800; font-size: 1.4rem; }
+        .categoria-title {
+            font-weight: 700; color: #c8102e; margin: 20px 0 10px; padding-bottom: 6px;
+            border-bottom: 2px solid #fee2e2; font-size: 1rem;
+        }
+
+        /* PREZZI LISTINO */
+        .prezzi-section { background: #f8fafc; }
+        .prezzo-categoria { background: white; border-radius: 16px; border: 1px solid #e2e8f0; margin: 0 auto 28px; max-width: 900px; overflow: hidden; }
+        .prezzo-header { background: #c8102e; color: white; padding: 16px 24px; font-weight: 700; }
+        .prezzo-header.dark { background: #0f172a; }
+        .prezzo-header.blue { background: #1e40af; }
+        .prezzo-header.green { background: #15803d; }
+        .prezzo-item { display: flex; justify-content: space-between; padding: 14px 24px; border-bottom: 1px solid #f1f5f9; gap: 20px; }
+        .prezzo-item:last-child { border-bottom: none; }
+        .prezzo-nome { font-weight: 500; }
+        .prezzo-nome small { display: block; color: #64748b; font-size: 0.85rem; margin-top: 3px; }
+        .prezzo-valore { font-weight: 700; color: #c8102e; white-space: nowrap; }
+        .prezzo-valore.free { color: #15803d; }
+
+        /* ========== LOGIN / AREA PERSONALE ========== */
+        .login-page {
+            min-height: calc(100vh - 70px - 40px);
+            background: #0f172a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+        .login-card {
+            background: #1e293b;
+            border-radius: 20px;
+            padding: 40px 36px;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.4);
+            text-align: center;
+            border: 1px solid #334155;
+        }
+        .login-logo {
+            width: 90px;
+            height: 90px;
+            margin: 0 auto 18px;
+            object-fit: contain;
+        }
+        .login-card h2 {
+            color: white;
+            font-size: 1.5rem;
+            margin-bottom: 6px;
+        }
+        .login-card .subtitle {
+            color: #94a3b8;
+            font-size: 0.9rem;
+            margin-bottom: 28px;
+        }
+
+        /* ECG / Holter animation */
+        .ecg-box {
+            height: 70px;
+            background: #0f172a;
+            border-radius: 12px;
+            margin-bottom: 28px;
+            overflow: hidden;
+            position: relative;
+            border: 1px solid #334155;
+        }
+        .ecg-box .holter-gif {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        .ecg-line {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 200%;
+            height: 2px;
+            transform: translateY(-50%);
+            background: linear-gradient(90deg,
+                transparent 0%,
+                #22c55e 5%,
+                #22c55e 8%,
+                transparent 10%,
+                transparent 18%,
+                #22c55e 20%,
+                #22c55e 22%,
+                #ef4444 24%,
+                #ef4444 26%,
+                #22c55e 28%,
+                #22c55e 30%,
+                transparent 32%,
+                transparent 45%,
+                #22c55e 47%,
+                #22c55e 50%,
+                transparent 52%,
+                transparent 60%,
+                #22c55e 62%,
+                #22c55e 64%,
+                #ef4444 66%,
+                #ef4444 68%,
+                #22c55e 70%,
+                #22c55e 72%,
+                transparent 74%,
+                transparent 100%
+            );
+            animation: ecgMove 2.2s linear infinite;
+        }
+        .ecg-line::before {
+            content: '';
+            position: absolute;
+            top: -18px;
+            left: 0;
+            right: 0;
+            height: 38px;
+            background: linear-gradient(90deg,
+                transparent 0%,
+                transparent 19%,
+                #22c55e 20%,
+                transparent 21%,
+                transparent 23%,
+                #ef4444 24.5%,
+                transparent 26%,
+                transparent 27%,
+                #22c55e 28%,
+                transparent 29%,
+                transparent 61%,
+                #22c55e 62%,
+                transparent 63%,
+                transparent 65%,
+                #ef4444 66.5%,
+                transparent 68%,
+                transparent 69%,
+                #22c55e 70%,
+                transparent 71%,
+                transparent 100%
+            );
+            opacity: 0.9;
+        }
+        @keyframes ecgMove {
+            0% { transform: translateX(0) translateY(-50%); }
+            100% { transform: translateX(-50%) translateY(-50%); }
+        }
+        .ecg-label {
+            position: absolute;
+            bottom: 6px;
+            right: 10px;
+            font-size: 0.7rem;
+            color: #64748b;
+            letter-spacing: 1px;
+        }
+
+        .login-card label {
+            display: block;
+            text-align: left;
+            color: #cbd5e1;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin: 14px 0 6px;
+        }
+        .login-card input {
+            width: 100%;
+            padding: 13px 14px;
+            border: 2px solid #334155;
+            border-radius: 10px;
+            background: #0f172a;
+            color: white;
+            font-size: 1rem;
+        }
+        .login-card input:focus {
+            outline: none;
+            border-color: #c8102e;
+        }
+        .login-card input::placeholder { color: #64748b; }
+        .btn-login {
+            width: 100%;
+            background: #c8102e;
+            color: white;
+            border: none;
+            padding: 14px;
+            font-size: 1.05rem;
+            font-weight: 700;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-top: 24px;
+            transition: background 0.2s;
+        }
+        .btn-login:hover { background: #a00d25; }
+        .login-error {
+            color: #fca5a5;
+            font-size: 0.9rem;
+            margin-top: 14px;
+            display: none;
+            font-weight: 600;
+        }
+
+        /* AREA PERSONALE DASHBOARD */
+        .area-page {
+            min-height: calc(100vh - 70px - 40px);
+            background: #0f172a;
+            padding: 50px 30px;
+            color: white;
+        }
+        .area-header {
+            max-width: 1000px;
+            margin: 0 auto 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .area-header h1 {
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .area-header h1 img { height: 42px; }
+        .btn-logout {
+            background: transparent;
+            border: 2px solid #64748b;
+            color: #cbd5e1;
+            padding: 10px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        .btn-logout:hover { border-color: #c8102e; color: #fca5a5; }
+        .area-grid {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 22px;
+        }
+        .area-card {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 16px;
+            padding: 28px;
+            text-align: center;
+            transition: 0.25s;
+            cursor: default;
+        }
+        .area-card:hover {
+            border-color: #c8102e;
+            transform: translateY(-3px);
+        }
+        .area-card i {
+            font-size: 2.2rem;
+            color: #c8102e;
+            margin-bottom: 14px;
+        }
+        .area-card h3 { margin-bottom: 8px; font-size: 1.15rem; }
+        .area-card p { color: #94a3b8; font-size: 0.9rem; line-height: 1.5; }
+        .area-placeholder {
+            max-width: 1000px;
+            margin: 40px auto 0;
+            background: #1e293b;
+            border: 1px dashed #475569;
+            border-radius: 16px;
+            padding: 40px;
+            text-align: center;
+            color: #94a3b8;
+        }
+        .notif-dot {
+          position: absolute;
+          top: 12px;
+          right: 12px;
+          width: 12px;
+          height: 12px;
+          border-radius: 50%;
+          background: #ef4444;
+          box-shadow: 0 0 0 3px rgba(239,68,68,0.25);
+          display: none;
+          z-index: 2;
+        }
+        .notif-dot.on { display: block; animation: notifPulse 1.4s ease-in-out infinite; }
+        @keyframes notifPulse {
+          0%, 100% { transform: scale(1); opacity: 1; }
+          50% { transform: scale(1.15); opacity: 0.85; }
+        }
+        .area-card { position: relative; }
+        .op-grid-compact { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 14px; }
+        .op-card-compact { max-width: 200px; margin: 0 auto; width: 100%; }
+        .op-card-compact .divisa-foto, .op-card-compact .op-foto-placeholder { height: 140px; object-fit: cover; width: 100%; }
+        .op-card-compact .divisa-body { padding: 10px 12px !important; }
+
+
+        .cittadino-ac-wrap { position: relative; }
+        .cittadino-ac-list {
+          position: absolute; left: 0; right: 0; top: 100%; z-index: 50;
+          background: #0f172a; border: 1px solid #475569; border-radius: 10px;
+          max-height: 220px; overflow-y: auto; box-shadow: 0 10px 28px rgba(0,0,0,0.45);
+          display: none; margin-top: 4px;
+        }
+        .cittadino-ac-list.open { display: block; }
+        .cittadino-ac-item {
+          padding: 10px 12px; cursor: pointer; border-bottom: 1px solid #1e293b;
+          color: #e2e8f0; font-size: 0.9rem; line-height: 1.35;
+        }
+        .cittadino-ac-item:last-child { border-bottom: none; }
+        .cittadino-ac-item:hover, .cittadino-ac-item.active { background: #1e293b; }
+        .cittadino-ac-item small { color: #94a3b8; display: block; font-size: 0.78rem; }
+
+        .area-card.clickable { cursor: pointer; }
+        .area-card.clickable:hover { border-color: #c8102e; transform: translateY(-3px); }
+
+        /* Lista prenotazioni Area Personale */
+        .prenota-lista {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .prenota-card {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 14px;
+            padding: 20px 22px;
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 16px;
+            align-items: center;
+        }
+        .prenota-card .info { color: #e2e8f0; line-height: 1.6; font-size: 0.95rem; }
+        .prenota-card .info strong { color: #fca5a5; }
+        .prenota-card .meta { color: #94a3b8; font-size: 0.85rem; margin-top: 6px; }
+        .btn-gestisci {
+            background: #c8102e;
+            color: white;
+            border: none;
+            padding: 12px 18px;
+            border-radius: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            white-space: nowrap;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn-gestisci:hover { background: #a00d25; }
+        .btn-indietro {
+            background: transparent;
+            border: 2px solid #64748b;
+            color: #cbd5e1;
+            padding: 10px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-bottom: 24px;
+        }
+        .btn-indietro:hover { border-color: #c8102e; color: #fca5a5; }
+        #formFieldsReferti label { color: #cbd5e1 !important; }
+        #formFieldsReferti input,
+        #formFieldsReferti select,
+        #formFieldsReferti textarea {
+            background: #0f172a !important;
+            color: #e2e8f0 !important;
+            border-color: #334155 !important;
+        }
+        #formFieldsReferti .farmaco-item {
+            background: #0f172a !important;
+            border-color: #334155 !important;
+            color: #e2e8f0;
+        }
+        #formFieldsReferti .farmaco-item label { color: #e2e8f0 !important; margin: 0 !important; }
+        .vuoto-msg {
+            text-align: center;
+            color: #94a3b8;
+            padding: 50px 20px;
+            background: #1e293b;
+            border-radius: 16px;
+            border: 1px dashed #475569;
+        }
+
+        footer { background: #0f172a; color: #94a3b8; padding: 40px 80px; text-align: center; font-size: 0.9rem; }
+        footer strong { color: white; }
+
+        @media (max-width: 900px) {
+            .hero { padding: 60px 25px; height: auto; }
+            .hero h1 { font-size: 2.2rem; }
+            .stats, .section { padding: 40px 20px; }
+            .stats { grid-template-columns: 1fr 1fr; gap: 20px; }
+            .cards, .farmaci-grid { grid-template-columns: 1fr; }
+            .nav-links { display: none; }
+            .row-form { grid-template-columns: 1fr; }
+        }
+    
+/* ===== CERTIFICATI SCOPED ===== */
+
+        :root {
+            --cri-red:       #c8102e;
+            --cri-red-dark:  #a00d24;
+            --bg:            #0a0e17;
+            --surface:       #111827;
+            --surface-alt:   #1e293b;
+            --text:          #f1f5f9;
+            --text-muted:    #94a3b8;
+            --border:        #334155;
+            --glow:          rgba(200, 16, 46, 0.18);
+            --selected-bg:   rgba(200, 16, 46, 0.16);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        #certApp {
+            font-family: 'Roboto Mono', monospace;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(circle at 15% 50%, var(--glow) 0%, transparent 25%),
+                radial-gradient(circle at 85% 30%, var(--glow) 0%, transparent 30%);
+            background-attachment: fixed;
+        }
+
+#certApp .container {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+        }
+
+#certApp .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 2.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid rgba(200,16,46,0.3);
+        }
+
+#certApp .logo-title {
+            display: flex;
+            align-items: center;
+            gap: 1.2rem;
+        }
+
+#certApp .logo {
+            width: 64px;
+            height: 64px;
+            filter: drop-shadow(0 0 8px rgba(200,16,46,0.5));
+        }
+
+#certApp h1 {
+            color: var(--cri-red);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.1rem;
+            letter-spacing: 1.5px;
+            text-shadow: 0 0 10px rgba(200,16,46,0.4);
+        }
+
+#certApp .by {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            opacity: 0.7;
+        }
+
+#certApp .tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            background: rgba(17,24,39,0.6);
+            padding: 0.5rem;
+            border-radius: 12px;
+            backdrop-filter: blur(8px);
+            border: 1px solid var(--border);
+        }
+
+#certApp .tab-btn {
+            flex: 1;
+            padding: 1rem;
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 500;
+            letter-spacing: 0.8px;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.25s;
+        }
+
+#certApp .tab-btn.active,
+#certApp .tab-btn:hover {
+            background: var(--cri-red);
+            color: white;
+            box-shadow: 0 0 15px rgba(200,16,46,0.45);
+        }
+
+#certApp .cert-page {
+            display: none;
+        }
+
+#certApp .cert-page.active {
+            display: block;
+        }
+
+#certApp .card {
+            background: var(--surface);
+            border-radius: 16px;
+            padding: 1.8rem 2rem;
+            margin-bottom: 1.8rem;
+            border: 1px solid var(--border);
+            backdrop-filter: blur(6px);
+            box-shadow: 
+                0 8px 32px rgba(0,0,0,0.4),
+                inset 0 0 0 1px rgba(200,16,46,0.08);
+            transition: transform 0.2s;
+        }
+
+#certApp .card:hover {
+            transform: translateY(-3px);
+        }
+
+#certApp .form-group {
+            margin-bottom: 1.6rem;
+        }
+
+#certApp label {
+            display: block;
+            margin-bottom: 0.6rem;
+            color: var(--text-muted);
+            font-size: 0.92rem;
+            font-weight: 500;
+            letter-spacing: 0.4px;
+        }
+
+#certApp input, #certApp select, #certApp textarea {
+            width: 100%;
+            padding: 0.9rem 1.1rem;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            background: rgba(15,23,42,0.6);
+            color: var(--text);
+            font-family: 'Roboto Mono', monospace;
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+
+#certApp input:focus, #certApp select:focus, #certApp textarea:focus {
+            outline: none;
+            border-color: var(--cri-red);
+            box-shadow: 0 0 0 3px rgba(200,16,46,0.25);
+        }
+
+#certApp textarea {
+            min-height: 140px;
+            resize: vertical;
+        }
+
+#certApp .add-lawyer-row {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+
+#certApp .add-lawyer-row input {
+            flex: 1;
+            min-width: 200px;
+        }
+
+#certApp button {
+            background: var(--cri-red);
+            color: white;
+            border: none;
+            padding: 0.9rem 1.8rem;
+            border-radius: 10px;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 500;
+            letter-spacing: 0.8px;
+            cursor: pointer;
+            transition: all 0.25s;
+        }
+
+#certApp button:hover:not(:disabled) {
+            background: var(--cri-red-dark);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(200,16,46,0.4);
+        }
+
+#certApp button:disabled {
+            background: #4b5563;
+            cursor: not-allowed;
+        }
+
+#certApp .btn-secondary { background: #475569; }
+#certApp .btn-secondary:hover { background: #64748b; }
+#certApp .btn-danger { background: #dc2626; }
+#certApp .btn-danger:hover { background: #b91c1c; }
+#certApp .btn-webhook { background: #16a34a; }
+#certApp .btn-webhook:hover { background: #15803d; }
+#certApp .btn-webhook:disabled { background: #4b5563; }
+
+#certApp .btn-row {
+            display: flex;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+
+#certApp .preview {
+            background: #020617;
+            border: 1px solid #1e293b;
+            border-radius: 12px;
+            padding: 1.6rem;
+            font-family: 'Roboto Mono', monospace;
+            white-space: pre-wrap;
+            margin-top: 1.5rem;
+            min-height: 240px;
+            line-height: 1.5;
+            font-size: 0.96rem;
+            box-shadow: inset 0 0 25px rgba(0,0,0,0.6);
+        }
+
+#certApp small {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            margin-top: 0.35rem;
+            display: block;
+        }
+
+#certApp .reati-search {
+            margin-bottom: 1rem;
+        }
+
+#certApp .reati-container {
+            max-height: 360px;
+            overflow-y: auto;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 0.8rem;
+            background: rgba(15,23,42,0.6);
+        }
+
+#certApp .reati-item {
+            display: flex;
+            align-items: center;
+            gap: 0.9rem;
+            padding: 0.6rem 0.9rem;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+
+#certApp .reati-item:hover {
+            background: rgba(200,16,46,0.12);
+        }
+
+#certApp .reati-item.highlight {
+            background: rgba(200,16,46,0.25);
+        }
+
+#certApp .reati-item.selected {
+            background: var(--selected-bg);
+            border-left: 3px solid var(--cri-red);
+        }
+
+#certApp .reati-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--cri-red);
+            cursor: pointer;
+        }
+
+#certApp .reati-item label {
+            cursor: pointer;
+            flex: 1;
+            white-space: normal;
+            word-break: break-word;
+            color: var(--text);
+        }
+
+#certApp .webhook-status {
+            margin-top: 0.8rem;
+            padding: 0.7rem 1rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            display: none;
+        }
+#certApp .webhook-status.ok {
+            display: block;
+            background: rgba(22, 163, 74, 0.15);
+            border: 1px solid #16a34a;
+            color: #4ade80;
+        }
+#certApp .webhook-status.err {
+            display: block;
+            background: rgba(220, 38, 38, 0.15);
+            border: 1px solid #dc2626;
+            color: #f87171;
+        }
+#certApp .webhook-status.loading {
+            display: block;
+            background: rgba(59, 130, 246, 0.15);
+            border: 1px solid #3b82f6;
+            color: #60a5fa;
+        }
+
+#certApp .price-row {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+#certApp .price-row .form-group {
+            flex: 1;
+            min-width: 140px;
+        }
+    
+
+/* ===== ASSUNZIONI DARK THEME OVERRIDES ===== */
+#page-area-assunzioni .area-page { background: #0f172a !important; }
+#assApp {
+    background: #0f172a !important;
+    color: #e2e8f0 !important;
+}
+#assApp .section,
+#assApp .output-card,
+#assApp .data-card {
+    background: #1e293b !important;
+    border-color: #334155 !important;
+    color: #e2e8f0 !important;
+}
+#assApp .section-header {
+    background: #1e293b !important;
+    border-bottom-color: #334155 !important;
+}
+#assApp .section-title h2,
+#assApp .output-title,
+#assApp .data-card-value { color: #f1f5f9 !important; }
+#assApp .section-title p,
+#assApp .data-card-label,
+#assApp .hint,
+#assApp .input-label { color: #94a3b8 !important; }
+#assApp textarea,
+#assApp input[type="text"] {
+    background: #0f172a !important;
+    color: #e2e8f0 !important;
+    border-color: #334155 !important;
+}
+#assApp .preview {
+    background: #0f172a !important;
+    border-color: #334155 !important;
+    color: #cbd5e1 !important;
+}
+#assApp .file-upload-btn {
+    background: #0f172a !important;
+    border-color: #475569 !important;
+    color: #cbd5e1 !important;
+}
+#assApp .btn-secondary {
+    background: #334155 !important;
+    color: #e2e8f0 !important;
+    border-color: #475569 !important;
+}
+#assApp .discord-id-section {
+    background: #1e293b !important;
+    border-color: #334155 !important;
+}
+#assApp .toast { color: #1a1a2e; }
+
+/* ===== ASSUNZIONI SCOPED ===== */
+
+        :root {
+            --cri-red: #c8102e;
+            --cri-red-dark: #8b0a1f;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            --green-50: #f0fdf4;
+            --green-100: #dcfce7;
+            --green-500: #22c55e;
+            --green-600: #16a34a;
+            --blue-50: #eff6ff;
+            --blue-500: #3b82f6;
+            --amber-50: #fffbeb;
+            --amber-100: #fef3c7;
+            --amber-500: #f59e0b;
+            --amber-600: #d97706;
+            --red-50: #fef2f2;
+            --red-100: #fee2e2;
+            --red-500: #ef4444;
+            --red-600: #dc2626;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        #assApp {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, var(--gray-50) 0%, var(--gray-100) 100%);
+            color: var(--gray-900);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+#assApp .app-header {
+            background: linear-gradient(135deg, var(--cri-red) 0%, var(--cri-red-dark) 100%);
+            box-shadow: 0 4px 20px rgba(200, 16, 46, 0.3);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+
+#assApp .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1rem 2rem 0.75rem;
+        }
+
+#assApp .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+        }
+
+#assApp .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+#assApp .logo-icon {
+            width: 48px;
+            height: 48px;
+            background: white;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            flex-shrink: 0;
+            transition: var(--transition);
+        }
+
+#assApp .logo-icon:hover {
+            transform: scale(1.05);
+        }
+
+#assApp .logo-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: 10px;
+        }
+
+#assApp .logo-text h1 {
+            font-size: 1.25rem;
+            color: white;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            margin: 0;
+            line-height: 1;
+        }
+
+#assApp .logo-text-subtitle {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 500;
+            margin-top: 0.25rem;
+            flex-wrap: wrap;
+        }
+
+#assApp .creator-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.375rem;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            padding: 0.1875rem 0.5rem 0.1875rem 0.1875rem;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: var(--transition);
+            text-decoration: none;
+            color: white;
+        }
+
+#assApp .creator-badge:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-1px);
+        }
+
+#assApp .creator-avatar {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 1.5px solid rgba(255, 255, 255, 0.5);
+            object-fit: cover;
+        }
+
+#assApp .creator-name {
+            font-weight: 700;
+            font-size: 0.6875rem;
+        }
+
+#assApp .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+#assApp .workflow {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+
+#assApp .section {
+            background: white;
+            border-radius: 20px;
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+            border: 1px solid var(--gray-200);
+            transition: var(--transition);
+            animation: slideUp 0.5s ease-out;
+        }
+
+        @keyframes slideUp {
+#assApp from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+#assApp to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+#assApp .section:hover {
+            box-shadow: var(--shadow-xl);
+        }
+
+#assApp .section-header {
+            background: linear-gradient(135deg, var(--gray-50) 0%, white 100%);
+            padding: 1.5rem 2rem;
+            border-bottom: 2px solid var(--gray-100);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+#assApp .section-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--cri-red), var(--cri-red-dark));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: 0 4px 12px rgba(200, 16, 46, 0.3);
+            flex-shrink: 0;
+        }
+
+#assApp .section-icon svg {
+            width: 28px;
+            height: 28px;
+            fill: white;
+        }
+
+#assApp .section-title {
+            flex: 1;
+        }
+
+#assApp .section-title h2 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-bottom: 0.25rem;
+        }
+
+#assApp .section-title p {
+            font-size: 0.875rem;
+            color: var(--gray-600);
+        }
+
+#assApp .section-#assApp {
+            padding: 2rem;
+        }
+
+#assApp .step-indicator {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            background: var(--cri-red);
+            color: white;
+            border-radius: 50%;
+            font-weight: 700;
+            font-size: 0.875rem;
+            box-shadow: 0 2px 8px rgba(200, 16, 46, 0.3);
+        }
+
+#assApp .input-group {
+            margin-bottom: 1.5rem;
+        }
+
+#assApp .input-label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9375rem;
+            font-weight: 600;
+            color: var(--gray-700);
+            margin-bottom: 0.75rem;
+        }
+
+#assApp .label-icon {
+            font-size: 1.125rem;
+        }
+
+#assApp .label-icon svg {
+            width: 20px;
+            height: 20px;
+            fill: var(--gray-700);
+        }
+
+#assApp .file-upload {
+            position: relative;
+        }
+
+#assApp .file-upload input[type=file] {
+            display: none;
+        }
+
+#assApp .file-upload-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            padding: 1.25rem;
+            background: var(--gray-50);
+            border: 2px dashed var(--gray-300);
+            border-radius: 16px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 0.9375rem;
+            color: var(--gray-600);
+            font-weight: 500;
+        }
+
+#assApp .file-upload-btn:hover {
+            background: var(--gray-100);
+            border-color: var(--cri-red);
+            transform: translateY(-2px);
+        }
+
+#assApp .file-upload-btn.loaded {
+            background: linear-gradient(135deg, var(--green-50) 0%, rgba(34, 197, 94, 0.1) 100%);
+            border-color: var(--green-500);
+            color: var(--green-600);
+        }
+
+#assApp .file-upload-btn.cached {
+            background: linear-gradient(135deg, var(--amber-50) 0%, rgba(245, 158, 11, 0.1) 100%);
+            border-color: var(--amber-500);
+            color: #92400e;
+        }
+
+#assApp .file-icon svg {
+            width: 28px;
+            height: 28px;
+        }
+
+#assApp .file-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 0.75rem;
+            padding: 0.5rem 1rem;
+            background: var(--green-50);
+            border: 1px solid var(--green-500);
+            border-radius: 8px;
+            color: var(--green-600);
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+#assApp .file-status svg {
+            width: 18px;
+            height: 18px;
+            fill: var(--green-600);
+        }
+
+#assApp textarea, #assApp input[type="text"] {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid var(--gray-200);
+            border-radius: 12px;
+            font-family: 'Inter', monospace;
+            font-size: 0.9375rem;
+            transition: var(--transition);
+            color: var(--gray-900);
+            background: white;
+        }
+
+#assApp textarea {
+            resize: vertical;
+            min-height: 100px;
+            font-family: 'Courier New', monospace;
+        }
+
+#assApp input[type="text"] {
+            font-family: 'Inter', sans-serif;
+        }
+
+#assApp textarea:focus, #assApp input[type="text"]:focus {
+            outline: none;
+            border-color: var(--cri-red);
+            box-shadow: 0 0 0 3px rgba(200, 16, 46, 0.1);
+            transform: translateY(-1px);
+        }
+
+#assApp textarea::placeholder, #assApp input[type="text"]::placeholder {
+            color: var(--gray-400);
+        }
+
+#assApp .hint {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 0.625rem;
+            font-size: 0.8125rem;
+            color: var(--gray-500);
+        }
+
+#assApp .hint svg {
+            width: 16px;
+            height: 16px;
+            fill: var(--gray-500);
+        }
+
+#assApp .discord-id-section {
+            background: linear-gradient(135deg, var(--blue-50) 0%, rgba(59, 130, 246, 0.05) 100%);
+            border: 2px solid #dbeafe;
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+#assApp .discord-id-section input[type="text"] {
+            max-width: 300px;
+        }
+
+#assApp .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.625rem;
+            background: var(--amber-500);
+            color: white;
+            border-radius: 6px;
+            font-size: 0.6875rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+#assApp .data-preview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 2px solid var(--gray-100);
+        }
+
+#assApp .data-card {
+            background: linear-gradient(135deg, var(--gray-50) 0%, white 100%);
+            padding: 1rem;
+            border-radius: 12px;
+            border: 2px solid var(--gray-100);
+            transition: var(--transition);
+        }
+
+#assApp .data-card:hover {
+            border-color: var(--cri-red);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+#assApp .data-card-label {
+            font-size: 0.75rem;
+            color: var(--gray-500);
+            text-transform: uppercase;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            letter-spacing: 0.5px;
+        }
+
+#assApp .data-card-value {
+            color: var(--gray-900);
+            font-weight: 600;
+            font-size: 0.9375rem;
+        }
+
+#assApp .outputs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1.5rem;
+        }
+
+#assApp .output-card {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 2px solid var(--gray-200);
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+        }
+
+#assApp .output-card:hover {
+            border-color: var(--cri-red);
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-2px);
+        }
+
+#assApp .output-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+#assApp .output-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--gray-100), var(--gray-50));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+
+#assApp .output-icon svg {
+            width: 24px;
+            height: 24px;
+            fill: var(--gray-700);
+        }
+
+#assApp .output-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--gray-900);
+        }
+
+#assApp .preview {
+            background: var(--gray-50);
+            border: 1px solid var(--gray-200);
+            border-radius: 12px;
+            padding: 1rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.8125rem;
+            white-space: pre-wrap;
+            max-height: 200px;
+            overflow-y: auto;
+            color: var(--gray-700);
+            line-height: 1.6;
+            flex: 1;
+            margin-bottom: 1rem;
+        }
+
+#assApp .preview::-webkit-scrollbar {
+            width: 6px;
+        }
+
+#assApp .preview::-webkit-scrollbar-track {
+            background: var(--gray-100);
+            border-radius: 10px;
+        }
+
+#assApp .preview::-webkit-scrollbar-thumb {
+            background: var(--gray-300);
+            border-radius: 10px;
+        }
+
+#assApp .preview::-webkit-scrollbar-thumb:hover {
+            background: var(--gray-400);
+        }
+
+#assApp button {
+            width: 100%;
+            padding: 0.875rem 1.5rem;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.9375rem;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.625rem;
+            font-family: inherit;
+        }
+
+#assApp button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+#assApp .btn-primary {
+            background: linear-gradient(135deg, var(--cri-red) 0%, var(--cri-red-dark) 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(200, 16, 46, 0.3);
+        }
+
+#assApp .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(200, 16, 46, 0.4);
+        }
+
+#assApp .btn-primary:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+#assApp .btn-secondary {
+            background: var(--gray-100);
+            color: var(--gray-700);
+            border: 2px solid var(--gray-200);
+        }
+
+#assApp .btn-secondary:hover:not(:disabled) {
+            background: var(--gray-200);
+            border-color: var(--cri-red);
+            color: var(--cri-red);
+            transform: translateY(-2px);
+        }
+
+#assApp .btn-icon svg {
+            width: 20px;
+            height: 20px;
+            fill: currentColor;
+        }
+
+#assApp .button-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+#assApp .disabled-reason {
+            margin-top: 0.75rem;
+            padding: 0.75rem 1rem;
+            background: var(--amber-50);
+            border: 1px solid var(--amber-500);
+            border-radius: 8px;
+            color: #92400e;
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+#assApp .disabled-reason svg {
+            width: 18px;
+            height: 18px;
+            fill: var(--amber-500);
+            flex-shrink: 0;
+        }
+
+        /* Sistema di notifiche migliorato */
+#assApp .toast-container {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 2000;
+            display: flex;
+            flex-direction: column-reverse;
+            gap: 12px;
+            max-width: 420px;
+            pointer-events: none;
+        }
+
+#assApp .toast {
+            background: white;
+            border-radius: 16px;
+            padding: 16px 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.08);
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            border-left: 4px solid;
+            animation: slideInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            pointer-events: auto;
+            position: relative;
+            overflow: hidden;
+            min-width: 320px;
+        }
+
+        @keyframes slideInUp {
+#assApp from {
+                transform: translateY(100px);
+                opacity: 0;
+            }
+#assApp to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideOutDown {
+#assApp to {
+                transform: translateY(100px);
+                opacity: 0;
+            }
+        }
+
+#assApp .toast.removing {
+            animation: slideOutDown 0.3s cubic-bezier(0.4, 0, 1, 1) forwards;
+        }
+
+#assApp .toast.success {
+            border-left-color: var(--green-500);
+            background: linear-gradient(to right, var(--green-50) 0%, white 100%);
+        }
+
+#assApp .toast.error {
+            border-left-color: var(--red-500);
+            background: linear-gradient(to right, var(--red-50) 0%, white 100%);
+        }
+
+#assApp .toast.warning {
+            border-left-color: var(--amber-500);
+            background: linear-gradient(to right, var(--amber-50) 0%, white 100%);
+        }
+
+#assApp .toast.info {
+            border-left-color: var(--blue-500);
+            background: linear-gradient(to right, var(--blue-50) 0%, white 100%);
+        }
+
+#assApp .toast-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+#assApp .toast.success .toast-icon {
+            background: var(--green-100);
+        }
+
+#assApp .toast.error .toast-icon {
+            background: var(--red-100);
+        }
+
+#assApp .toast.warning .toast-icon {
+            background: var(--amber-100);
+        }
+
+#assApp .toast.info .toast-icon {
+            background: #bfdbfe;
+        }
+
+#assApp .toast-icon svg {
+            width: 24px;
+            height: 24px;
+        }
+
+#assApp .toast.success .toast-icon svg {
+            fill: var(--green-600);
+        }
+
+#assApp .toast.error .toast-icon svg {
+            fill: var(--red-600);
+        }
+
+#assApp .toast.warning .toast-icon svg {
+            fill: var(--amber-600);
+        }
+
+#assApp .toast.info .toast-icon svg {
+            fill: var(--blue-500);
+        }
+
+#assApp .toast-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+#assApp .toast-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            margin-bottom: 4px;
+        }
+
+#assApp .toast-title {
+            font-weight: 700;
+            font-size: 0.9375rem;
+            color: var(--gray-900);
+            line-height: 1.3;
+        }
+
+#assApp .toast-close {
+            width: 20px;
+            height: 20px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            transition: var(--transition);
+            flex-shrink: 0;
+        }
+
+#assApp .toast-close:hover {
+            background: var(--gray-200);
+        }
+
+#assApp .toast-close svg {
+            width: 14px;
+            height: 14px;
+            fill: var(--gray-500);
+        }
+
+#assApp .toast-message {
+            font-size: 0.875rem;
+            color: var(--gray-600);
+            line-height: 1.5;
+        }
+
+#assApp .toast-progress {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 3px;
+            background: currentColor;
+            opacity: 0.3;
+            animation: progressBar linear forwards;
+        }
+
+#assApp .toast.success .toast-progress {
+            color: var(--green-500);
+        }
+
+#assApp .toast.error .toast-progress {
+            color: var(--red-500);
+        }
+
+#assApp .toast.warning .toast-progress {
+            color: var(--amber-500);
+        }
+
+#assApp .toast.info .toast-progress {
+            color: var(--blue-500);
+        }
+
+        @keyframes progressBar {
+#assApp from {
+                width: 100%;
+            }
+#assApp to {
+                width: 0%;
+            }
+        }
+
+        @media (max-width: 768px) {
+#assApp .header-content {
+                padding: 0.875rem 1rem 0.625rem;
+            }
+
+#assApp .header-top {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+#assApp .container {
+                padding: 1rem;
+            }
+
+#assApp .section-#assApp {
+                padding: 1.5rem;
+            }
+
+#assApp .outputs-grid {
+                grid-template-columns: 1fr;
+            }
+
+#assApp .button-group {
+                grid-template-columns: 1fr;
+            }
+
+#assApp .toast-container {
+                left: 16px;
+                right: 16px;
+                bottom: 16px;
+                max-width: none;
+            }
+
+#assApp .toast {
+                min-width: 0;
+            }
+        }
+    
+
+/* ===== BONUS SCOPED ===== */
+
+#bonusApp { font-family: Arial, sans-serif; background:#ffffff; color:#000000; padding:20px; }
+#bonusApp .box { background:#f8f8f8; padding:15px; border-radius:10px; margin-bottom:20px; border: 1px solid #dc2626; }
+#bonusApp input, #bonusApp button, #bonusApp textarea { padding:8px; margin:5px 0; width:100%; border-radius:6px; border:1px solid #dc2626; box-sizing:border-box; }
+#bonusApp button { background:#dc2626; color:white; cursor:pointer; }
+#bonusApp button:hover { background:#b91c1c; }
+#bonusApp #btnControlla { background:#dc2626; }
+#bonusApp #btnControlla:hover { background:#b91c1c; }
+#bonusApp pre { white-space:pre-wrap; background:#f8f8f8; padding:15px; border-radius:10px; border: 1px solid #dc2626; color: #000; }
+#bonusApp table { width:100%; border-collapse:collapse; }
+#bonusApp th, #bonusApp td { padding:8px; border-bottom:1px solid #dc2626; text-align:left; }
+#bonusApp textarea { background:#ffffff; color:#000000; min-height:200px; resize:vertical; }
+#bonusApp .id-cell { font-size:0.8em; color:#94a3b8; font-family:monospace; }
+#bonusApp hr { border-color:#dc2626; margin:15px 0; }
+#bonusApp .label { font-weight:bold; margin-top:10px; display:block; }
+#bonusApp .tariffa-input { width:100px; text-align:center; }
+#bonusApp .sum-box { background:#f8f8f8; padding:15px; border-radius:10px; text-align:center; flex:1; min-width:160px; border:1px solid #dc2626; }
+#bonusApp .sum-box strong { font-size:1.4em; display:block; margin:10px 0 5px; color: #dc2626; }
+#bonusApp h1, #bonusApp h3 { color: #dc2626; }
+
+#bonusApp { background: transparent !important; color: #e2e8f0 !important; }
+#bonusApp .box { background: #1e293b !important; border-color: #334155 !important; color: #e2e8f0 !important; }
+#bonusApp input, #bonusApp textarea, #bonusApp pre {
+  background: #0f172a !important; color: #e2e8f0 !important; border-color: #475569 !important;
+}
+#bonusApp h1, #bonusApp h2, #bonusApp h3 { color: #fca5a5 !important; }
+#bonusApp button { background: #c8102e !important; border-color: #c8102e !important; }
+#bonusApp .sum-box { background: #1e293b !important; border-color: #334155 !important; color: #e2e8f0 !important; }
+#bonusApp .sum-box strong { color: #fca5a5 !important; }
+#bonusApp table th, #bonusApp table td { border-color: #334155 !important; color: #e2e8f0 !important; }
+#bonusApp hr { border-color: #334155 !important; }
+#bonusApp .label { color: #cbd5e1 !important; }
+#bonusApp small { color: #94a3b8 !important; }
+
+
+/* ===== FATTURATO SCOPED ===== */
+
+        :root {
+            --primary: #C62828;
+            --primary-light: #FFEBEE;
+            --primary-dark: #8E0000;
+            --accent: #EF5350;
+            --accent-hover: #D32F2F;
+            --success: #2E7D32;
+            --danger: #C62828;
+            --warning: #FF8F00;
+            --info: #1565C0;
+            --text-dark: #212121;
+            --text-medium: #424242;
+            --text-light: #FFFFFF;
+            --border: #E0E0E0;
+            --bg-light: #FAFAFA;
+            --bg-white: #FFFFFF;
+            --hover-light: #F5F5F5;
+            --category-header: #B71C1C;
+            --popular-badge: #FFC107;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        #fattApp {
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+        
+#fattApp .container {
+            width: 95%;
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+#fattApp header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: var(--text-light);
+            padding: 1.5rem;
+            text-align: center;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+#fattApp header::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+        
+#fattApp h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+        
+#fattApp .dashboard {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+#fattApp .card {
+            background: var(--bg-white);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+#fattApp .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+#fattApp .card h3 {
+            color: var(--primary);
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+        
+#fattApp .card .value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--text-dark);
+            cursor: pointer;
+            transition: all 0.2s;
+            padding: 5px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        
+#fattApp .card .value:hover {
+            background-color: var(--primary-light);
+        }
+        
+#fattApp .card .value.copied {
+            background-color: var(--success);
+            color: white;
+        }
+        
+#fattApp .card.profit {
+            border-top: 4px solid var(--success);
+        }
+        
+#fattApp .card.net {
+            border-top: 4px solid var(--primary);
+        }
+        
+#fattApp .card.cost {
+            border-top: 4px solid var(--danger);
+        }
+        
+#fattApp table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background-color: var(--bg-white);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+#fattApp th, #fattApp td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+        
+#fattApp th {
+            background-color: var(--primary);
+            color: var(--text-light);
+            font-weight: 500;
+        }
+        
+#fattApp tr:nth-child(even) {
+            background-color: var(--bg-light);
+        }
+        
+#fattApp tr:hover {
+            background-color: var(--hover-light);
+        }
+        
+#fattApp input[type="number"], #fattApp input[type="text"], #fattApp input[type="date"], #fattApp select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            background-color: var(--bg-white);
+            font-size: 14px;
+            transition: border 0.3s;
+        }
+        
+#fattApp input:focus, #fattApp select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px var(--primary-light);
+        }
+        
+#fattApp .category-header {
+            background-color: var(--category-header);
+            color: var(--text-light);
+            font-weight: 500;
+            transition: background-color 0.2s;
+        }
+        
+#fattApp .category-header:hover {
+            background-color: var(--category-header) !important;
+        }
+        
+#fattApp .category-header td {
+            padding: 10px 15px;
+        }
+        
+#fattApp .actions {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 0;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+#fattApp .actions-left, #fattApp .actions-right {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+#fattApp button {
+            padding: 10px 16px;
+            background-color: var(--accent);
+            color: var(--text-light);
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+        
+#fattApp button:hover {
+            background-color: var(--accent-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        
+#fattApp button:active {
+            transform: translateY(0);
+        }
+        
+#fattApp button.primary {
+            background-color: var(--success);
+        }
+        
+#fattApp button.primary:hover {
+            background-color: #2E7D32;
+        }
+        
+#fattApp button.danger {
+            background-color: var(--danger);
+        }
+        
+#fattApp button.danger:hover {
+            background-color: #B71C1C;
+        }
+        
+#fattApp button.secondary {
+            background-color: #616161;
+            color: white;
+        }
+        
+#fattApp button.secondary:hover {
+            background-color: #424242;
+        }
+        
+#fattApp button.info {
+            background-color: var(--info);
+        }
+        
+#fattApp button.info:hover {
+            background-color: #0D47A1;
+        }
+        
+#fattApp .quantity-control {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+#fattApp .quantity-control input {
+            width: 60px;
+            text-align: center;
+            margin: 0 5px;
+            padding: 8px;
+        }
+        
+#fattApp .quantity-btn {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--accent);
+            color: var(--text-light);
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+        
+#fattApp .quantity-btn:hover {
+            background-color: var(--accent-hover);
+            transform: scale(1.1);
+        }
+        
+#fattApp .filters {
+            display: flex;
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: var(--bg-white);
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+#fattApp .filter-group {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            min-width: 200px;
+        }
+        
+#fattApp .filter-group label {
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text-medium);
+            font-size: 14px;
+        }
+        
+#fattApp footer {
+            text-align: center;
+            padding: 20px;
+            margin-top: 40px;
+            color: var(--text-medium);
+            font-size: 0.9rem;
+            border-top: 1px solid var(--border);
+        }
+        
+        /* Modal styles */
+#fattApp .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            overflow: auto;
+            backdrop-filter: blur(2px);
+        }
+        
+#fattApp .modal-content {
+            background-color: var(--bg-white);
+            margin: 5% auto;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            width: 90%;
+            max-width: 600px;
+            animation: modalFadeIn 0.3s;
+            position: relative;
+        }
+        
+        @keyframes modalFadeIn {
+#fattApp from { opacity: 0; transform: translateY(-20px); }
+#fattApp to { opacity: 1; transform: translateY(0); }
+        }
+        
+#fattApp .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+        
+#fattApp .modal-title {
+            font-size: 1.5rem;
+            color: var(--primary);
+            font-weight: 500;
+        }
+        
+#fattApp .close {
+            color: var(--text-medium);
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        
+#fattApp .close:hover {
+            color: var(--text-dark);
+        }
+        
+#fattApp .form-group {
+            margin-bottom: 20px;
+        }
+        
+#fattApp .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text-medium);
+        }
+        
+#fattApp .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 25px;
+        }
+        
+#fattApp .action-col {
+            width: 120px;
+            text-align: center;
+        }
+        
+#fattApp .btn-edit, #fattApp .btn-delete {
+            padding: 6px 12px;
+            margin: 0 3px;
+            font-size: 0.9rem;
+            border-radius: 4px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+#fattApp .btn-edit {
+            background-color: var(--warning);
+        }
+        
+#fattApp .btn-delete {
+            background-color: var(--danger);
+        }
+        
+        /* Modal per la quantità */
+#fattApp .modal-quantity {
+            display: none;
+        }
+        
+        /* Stile per la modal delle categorie */
+#fattApp .categories-list {
+            margin-bottom: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+#fattApp .category-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            border-bottom: 1px solid var(--border);
+        }
+        
+#fattApp .category-item:last-child {
+            border-bottom: none;
+        }
+        
+#fattApp .category-edit {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex: 1;
+        }
+        
+#fattApp .category-edit-input {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+        }
+        
+#fattApp .category-actions {
+            display: flex;
+            gap: 5px;
+        }
+        
+#fattApp .btn-save-category {
+            background-color: var(--success);
+            color: white;
+            padding: 5px 10px;
+            font-size: 0.8rem;
+        }
+        
+#fattApp .btn-cancel-category {
+            background-color: var(--danger);
+            color: white;
+            padding: 5px 10px;
+            font-size: 0.8rem;
+        }
+        
+#fattApp .reports-list {
+            margin-top: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+#fattApp .report-item {
+            padding: 12px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+#fattApp .report-item:last-child {
+            border-bottom: none;
+        }
+        
+#fattApp .report-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+#fattApp .icon-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--primary);
+            font-size: 1.2rem;
+            padding: 5px;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+        
+#fattApp .icon-btn:hover {
+            background-color: var(--primary-light);
+            color: var(--primary-dark);
+        }
+        
+        /* Stile per i report generati */
+#fattApp .report-container {
+            font-family: 'Roboto', sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            color: #333;
+        }
+        
+#fattApp .report-header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #C62828;
+            padding-bottom: 15px;
+        }
+        
+#fattApp .report-title {
+            color: #C62828;
+            margin-bottom: 5px;
+        }
+        
+#fattApp .report-date {
+            color: #666;
+            font-size: 0.9em;
+        }
+        
+#fattApp .report-section {
+            margin-bottom: 25px;
+        }
+        
+#fattApp .section-title {
+            background-color: #C62828;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+        
+#fattApp .product-list {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+#fattApp .product-list th {
+            background-color: #F5F5F5;
+            text-align: left;
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+#fattApp .product-list td {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+#fattApp .product-list tr:nth-child(even) {
+            background-color: #FAFAFA;
+        }
+        
+#fattApp .total-row {
+            font-weight: bold;
+            background-color: #F5F5F5 !important;
+        }
+        
+        /* Nuovi stili per la ricerca e popolarità */
+#fattApp .search-container {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+        }
+        
+#fattApp #search-input {
+            flex: 1;
+            padding: 10px 15px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        
+#fattApp #search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px var(--primary-light);
+        }
+        
+#fattApp .popular-badge {
+            background-color: var(--popular-badge);
+            color: var(--text-dark);
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            margin-left: 8px;
+            display: inline-flex;
+            align-items: center;
+        }
+        
+#fattApp .popular-icon {
+            margin-right: 4px;
+            font-size: 0.9rem;
+        }
+        
+#fattApp .sort-options {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+#fattApp .sort-option {
+            padding: 6px 12px;
+            border-radius: 16px;
+            background-color: var(--bg-light);
+            color: var(--text-medium);
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+#fattApp .sort-option:hover {
+            background-color: var(--hover-light);
+        }
+        
+#fattApp .sort-option.active {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+#fattApp .sort-option.none {
+            background-color: var(--bg-white);
+            border: 1px solid var(--border);
+        }
+        
+        /* Pulsante reset dati */
+#fattApp .reset-data-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background-color: var(--danger);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+        }
+        
+#fattApp .reset-data-btn:hover {
+            transform: scale(1.1);
+            background-color: var(--primary-dark);
+        }
+        
+#fattApp .reset-data-btn .material-icons {
+            font-size: 24px;
+        }
+        
+        /* Pulsante reset filtri */
+#fattApp .reset-filters-btn {
+            background-color: var(--bg-white);
+            color: var(--text-medium);
+            border: 1px solid var(--border);
+        }
+        
+#fattApp .reset-filters-btn:hover {
+            background-color: var(--hover-light);
+        }
+        
+        @media (max-width: 768px) {
+#fattApp .dashboard {
+                grid-template-columns: 1fr;
+            }
+            
+#fattApp .actions-left, #fattApp .actions-right {
+                justify-content: center;
+                width: 100%;
+            }
+            
+#fattApp .modal-content {
+                width: 95%;
+                margin: 10% auto;
+                padding: 15px;
+            }
+            
+#fattApp .filters {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+#fattApp .filter-group {
+                min-width: 100%;
+            }
+            
+#fattApp .search-container {
+                flex-direction: column;
+            }
+            
+#fattApp .sort-options {
+                flex-wrap: wrap;
+            }
+            
+#fattApp .reset-data-btn {
+                top: 10px;
+                right: 10px;
+                width: 40px;
+                height: 40px;
+            }
+        }
+    
+#fattApp { background: transparent !important; color: #e2e8f0 !important; }
+#fattApp header { background: linear-gradient(135deg, #c8102e, #8b0a1f) !important; }
+#fattApp .card, #fattApp .filters, #fattApp table {
+  background: #1e293b !important; color: #e2e8f0 !important;
+  box-shadow: none !important; border: 1px solid #334155 !important;
+}
+#fattApp .card h3 { color: #fca5a5 !important; }
+#fattApp .card .value { color: #f1f5f9 !important; }
+#fattApp th { background: #c8102e !important; }
+#fattApp tr:nth-child(even) { background: #0f172a !important; }
+#fattApp tr:hover { background: #334155 !important; }
+#fattApp td { border-color: #334155 !important; color: #e2e8f0 !important; }
+#fattApp input, #fattApp select {
+  background: #0f172a !important; color: #e2e8f0 !important; border-color: #475569 !important;
+}
+#fattApp .filter-group label { color: #94a3b8 !important; }
+#fattApp .sort-option { background: #334155 !important; color: #e2e8f0 !important; }
+#fattApp .sort-option.active { background: #c8102e !important; }
+#fattApp .modal-content { background: #1e293b !important; color: #e2e8f0 !important; }
+#fattApp .modal-title { color: #fca5a5 !important; }
+#fattApp .form-group label { color: #cbd5e1 !important; }
+#fattApp footer { color: #94a3b8 !important; border-color: #334155 !important; }
+#fattApp .reset-data-btn { top: auto; bottom: 20px; }
+
+
+.pwd-wrap { position: relative; display: block; width: 100%; }
+.pwd-wrap input { width: 100%; padding-right: 44px !important; }
+.pwd-toggle {
+  position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+  background: none; border: none; color: #94a3b8; cursor: pointer;
+  padding: 4px 6px; font-size: 1.1rem; line-height: 1; width: auto !important;
+}
+.pwd-toggle:hover { color: #fca5a5; }
+.login-card .pwd-wrap { margin-bottom: 0; }
+
+
+
+
+/* ===== PARCO MEZZI / DIVISE ===== */
+.parco-mezzi-grid, .divise-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 22px;
+  max-width: 1200px;
+  margin: 0 auto 36px;
+}
+.mezzo-card, .divisa-card {
+  background: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 16px;
+  overflow: hidden;
+  transition: 0.25s;
+  display: flex;
+  flex-direction: column;
+}
+.mezzo-card:hover, .divisa-card:hover {
+  border-color: #c8102e;
+  transform: translateY(-3px);
+  box-shadow: 0 12px 28px rgba(0,0,0,0.35);
+}
+.mezzo-card .mezzo-foto, .divisa-card .divisa-foto {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+  object-position: top center;
+  background: #0f172a;
+  display: block;
+  cursor: zoom-in;
+}
+.mezzo-card .mezzo-foto:hover, .divisa-card .divisa-foto:hover { opacity: 0.92; }
+.mezzo-card .mezzo-body, .divisa-card .divisa-body {
+  padding: 16px 18px 18px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.mezzo-card .mezzo-nome, .divisa-card .divisa-nome {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #f1f5f9;
+  margin: 0;
+}
+.mezzo-card .mezzo-grado, .divisa-card .divisa-grado {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(200,16,46,0.18);
+  color: #fca5a5;
+  border: 1px solid rgba(200,16,46,0.35);
+  padding: 5px 10px;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  width: fit-content;
+}
+.mezzo-card .mezzo-meta, .divisa-card .divisa-meta {
+  color: #94a3b8;
+  font-size: 0.85rem;
+  line-height: 1.45;
+}
+.mezzo-card .mezzo-meta strong, .divisa-card .divisa-meta strong { color: #cbd5e1; }
+.divise-section-title {
+  max-width: 1200px;
+  margin: 10px auto 18px;
+  color: #fca5a5;
+  font-size: 1.35rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid rgba(200,16,46,0.35);
+}
+.divise-subsection-title {
+  max-width: 1200px;
+  margin: 8px auto 16px;
+  color: #e2e8f0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.divise-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(59,130,246,0.15);
+  color: #93c5fd;
+  border: 1px solid rgba(59,130,246,0.35);
+  padding: 4px 9px;
+  border-radius: 8px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  width: fit-content;
+}
+.foto-lightbox {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  background: rgba(2, 6, 23, 0.88);
+  backdrop-filter: blur(6px);
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  cursor: zoom-out;
+}
+.foto-lightbox.open { display: flex; }
+.foto-lightbox img {
+  max-width: min(96vw, 1100px);
+  max-height: 90vh;
+  object-fit: contain;
+  border-radius: 12px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.55);
+  cursor: default;
+  background: #0f172a;
+}
+.foto-lightbox-close {
+  position: absolute;
+  top: 18px;
+  right: 22px;
+  width: 44px;
+  height: 44px;
+  border: none;
+  border-radius: 50%;
+  background: #c8102e;
+  color: white;
+  font-size: 1.4rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10001;
+}
+.foto-lightbox-close:hover { background: #a00d25; }
+.foto-lightbox-caption {
+  position: absolute;
+  bottom: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #e2e8f0;
+  background: rgba(15,23,42,0.85);
+  border: 1px solid #334155;
+  padding: 8px 16px;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  max-width: 90vw;
+  text-align: center;
+  pointer-events: none;
+}
+body.theme-light .mezzo-card,
+body.theme-light .divisa-card {
+  background: #fff !important;
+  border-color: #e2e8f0 !important;
+}
+body.theme-light .mezzo-card .mezzo-nome,
+body.theme-light .divisa-card .divisa-nome { color: #0f172a !important; }
+body.theme-light .divise-section-title { color: #c8102e !important; border-color: #fecaca !important; }
+body.theme-light .divise-subsection-title { color: #0f172a !important; }
+
+/* ===== I MIEI DATI SIDEBAR ===== */
+.area-layout {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+  align-items: start;
+}
+.miei-dati-box {
+  background: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 16px;
+  padding: 22px 18px;
+  position: sticky;
+  top: 90px;
+}
+.miei-dati-box h3 {
+  color: #fca5a5;
+  font-size: 1.05rem;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.miei-dati-box .hint {
+  color: #94a3b8;
+  font-size: 0.8rem;
+  margin-bottom: 14px;
+  line-height: 1.4;
+}
+.miei-dati-box label {
+  display: block;
+  color: #cbd5e1;
+  font-weight: 600;
+  font-size: 0.85rem;
+  margin: 10px 0 5px;
+}
+.miei-dati-box input {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid #475569;
+  background: #0f172a;
+  color: #e2e8f0;
+  font-size: 0.9rem;
+}
+.miei-dati-box input:focus {
+  outline: none;
+  border-color: #c8102e;
+}
+.miei-dati-box .btn-salva-dati {
+  width: 100%;
+  margin-top: 14px;
+  background: #c8102e;
+  color: white;
+  border: none;
+  padding: 11px;
+  border-radius: 8px;
+  font-weight: 700;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+.miei-dati-box .btn-salva-dati:hover { background: #a00d25; }
+.miei-dati-status {
+  margin-top: 10px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-align: center;
+  display: none;
+}
+.miei-dati-preview {
+  margin-top: 12px;
+  padding: 10px;
+  background: #0f172a;
+  border-radius: 8px;
+  border: 1px solid #334155;
+  font-size: 0.82rem;
+  color: #94a3b8;
+  line-height: 1.5;
+  display: none;
+}
+@media (max-width: 900px) {
+  .area-layout { grid-template-columns: 1fr; }
+  .miei-dati-box { position: static; }
+}
+body.theme-light .miei-dati-box {
+  background: #fff !important;
+  border-color: #e2e8f0 !important;
+}
+body.theme-light .miei-dati-box h3 { color: #c8102e !important; }
+body.theme-light .miei-dati-box label { color: #334155 !important; }
+body.theme-light .miei-dati-box input {
+  background: #f8fafc !important;
+  color: #0f172a !important;
+  border-color: #cbd5e1 !important;
+}
+body.theme-light .miei-dati-preview {
+  background: #f8fafc !important;
+  border-color: #e2e8f0 !important;
+  color: #64748b !important;
+}
+
+/* ===== THEME TOGGLE ===== */
+.theme-toggle-btn {
+  position: fixed;
+  bottom: 22px;
+  left: 22px;
+  z-index: 9999;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 2px solid #334155;
+  background: #1e293b;
+  color: #fbbf24;
+  font-size: 1.25rem;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+.theme-toggle-btn:hover { transform: scale(1.08); border-color: #c8102e; }
+body.theme-light .theme-toggle-btn {
+  background: #fff;
+  border-color: #cbd5e1;
+  color: #0f172a;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+}
+
+/* Light theme overrides */
+body.theme-light {
+  background: #f1f5f9 !important;
+  color: #0f172a !important;
+}
+body.theme-light .topbar,
+body.theme-light .navbar { background: #fff !important; border-color: #e2e8f0 !important; }
+body.theme-light .navbar a,
+body.theme-light .nav-links a { color: #334155 !important; }
+body.theme-light .area-page,
+body.theme-light #page-area,
+body.theme-light #page-area-dirigenza .area-page,
+body.theme-light #page-login .login-page {
+  background: #f1f5f9 !important;
+}
+body.theme-light .area-header h1,
+body.theme-light .area-card h3 { color: #0f172a !important; }
+body.theme-light .area-card {
+  background: #fff !important;
+  border-color: #e2e8f0 !important;
+  color: #334155 !important;
+}
+body.theme-light .area-card p { color: #64748b !important; }
+body.theme-light .area-card i { color: #c8102e !important; }
+body.theme-light .btn-indietro,
+body.theme-light .btn-logout {
+  color: #334155 !important;
+  border-color: #94a3b8 !important;
+}
+body.theme-light .login-card,
+body.theme-light .form-wrapper,
+body.theme-light .prenota-card,
+body.theme-light .area-placeholder {
+  background: #fff !important;
+  border-color: #e2e8f0 !important;
+  color: #0f172a !important;
+}
+body.theme-light .login-card h2,
+body.theme-light .login-card label { color: #0f172a !important; }
+body.theme-light .login-card input,
+body.theme-light input, body.theme-light select, body.theme-light textarea {
+  background: #f8fafc !important;
+  color: #0f172a !important;
+  border-color: #cbd5e1 !important;
+}
+body.theme-light footer { background: #e2e8f0 !important; color: #475569 !important; }
+body.theme-light #dirigenzaPasswordBox,
+body.theme-light #bonusPasswordBox,
+body.theme-light #fattPasswordBox {
+  background: #fff !important;
+  border-color: #e2e8f0 !important;
+}
+body.theme-light #dirigenzaPasswordBox h2,
+body.theme-light #bonusPasswordBox h2,
+body.theme-light #fattPasswordBox h2 { color: #0f172a !important; }
+body.theme-light .hero { filter: none; }
+body.theme-light .section { background: #fff !important; }
+body.theme-light .section-title h2 { color: #0f172a !important; }
+
+
+@media (max-width: 900px) { .prenota-layout { grid-template-columns: 1fr !important; } }
+</style>
+</head>
+<body style="margin:0;background:#0f172a;color:#e2e8f0;font-family:system-ui,sans-serif;">
+
+<header class="site-header" style="position:sticky;top:0;z-index:100;background:#0f172a;border-bottom:1px solid #334155;">
+  <div style="max-width:1100px;margin:0 auto;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+    <div style="display:flex;align-items:center;gap:10px;cursor:pointer;" onclick="mostraPagina('home')">
+      <img src="https://upload.wikimedia.org/wikipedia/it/4/4a/Emblema_CRI.svg" alt="CRI" style="height:40px;">
+      <strong style="color:#e2e8f0;">Croce Rossa Italiana</strong>
+    </div>
+    <nav style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+      <button type="button" onclick="mostraPagina('home')" style="background:transparent;border:1px solid #334155;color:#e2e8f0;padding:8px 12px;border-radius:8px;cursor:pointer;">Home</button>
+      <button type="button" onclick="mostraPagina('prenotazioni')" style="background:transparent;border:1px solid #334155;color:#e2e8f0;padding:8px 12px;border-radius:8px;cursor:pointer;">Prenota</button>
+      <button type="button" onclick="mostraPagina('farmacia')" style="background:transparent;border:1px solid #334155;color:#e2e8f0;padding:8px 12px;border-radius:8px;cursor:pointer;">Ordini Farmacia</button>
+      <button type="button" onclick="mostraPagina('login')" style="background:#c8102e;border:none;color:#fff;padding:8px 14px;border-radius:8px;cursor:pointer;font-weight:700;">Area personale</button>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+<div class="topbar" style="display:flex;align-items:center;justify-content:center;gap:18px;flex-wrap:wrap;">
+  <span><i class="fas fa-phone-alt"></i> Emergenze: <strong>118</strong> (Servizio attivo 24/7)</span>
+  <span style="opacity:0.45;">|</span>
+  <a href="https://discord.com/users/872144738248183839" target="_blank" rel="noopener noreferrer" style="color:inherit;text-decoration:none;font-weight:600;display:inline-flex;align-items:center;gap:6px;" title="Apri profilo Discord">
+    <i class="fab fa-discord"></i> Sito By Damy_97 <span style="opacity:0.9;">#Stark</span> <span style="opacity:0.85;">damy_97</span>
+  </a>
+</div>
+
+<nav class="navbar">
+    <a class="logo" onclick="mostraPagina('home')">
+        <img src="https://upload.wikimedia.org/wikipedia/it/4/4a/Emblema_CRI.svg" alt="CRI">
+        CROCE ROSSA ITALIANA
+    </a>
+    <ul class="nav-links">
+        <li><a onclick="mostraPagina('home')" id="nav-home" class="active">HOME</a></li>
+        <li><a onclick="mostraPagina('prenotazioni')" id="nav-prenotazioni">PRENOTAZIONI</a></li>
+        <li><a onclick="mostraPagina('ordine')" id="nav-ordine">ORDINE FARMACIA</a></li>
+        <li><a onclick="mostraPagina('farmacia')" id="nav-farmacia">LISTINO PREZZI</a></li>
+        <li><a onclick="mostraPagina('contatti')" id="nav-contatti">CONTATTI</a></li>
+    </ul>
+    <button class="btn-area" ><i class="fas fa-lock"></i> Area Personale</button>
+</nav>
+
+<!-- HOME -->
+<div id="page-home" class="page active">
+    <section class="hero">
+        <div class="hero-content">
+            <div class="badge">❤️ Salute e Prevenzione</div>
+            <h1>Proteggiamo la tua<br><span>Salute</span> ogni giorno</h1>
+            <p>L'eccellenza medica e il calore umano al tuo servizio. Prenota visite, ordina farmaci e scopri i nostri servizi.</p>
+            <div class="hero-btns">
+                <button class="btn-primary" onclick="mostraPagina('prenotazioni')"><i class="fas fa-calendar-check"></i> Prenota Subito</button>
+                <button class="btn-outline" onclick="mostraPagina('ordine')">Ordina Farmaci</button>
+            </div>
+        </div>
+    </section>
+    <div class="stats">
+        <div><div class="stat-num">24/7</div><div class="stat-label">Pronto Intervento</div></div>
+        <div><div class="stat-num">150+</div><div class="stat-label">Professionisti Medici</div></div>
+        <div><div class="stat-num">10k</div><div class="stat-label">Interventi Annui</div></div>
+        <div><div class="stat-num">100%</div><div class="stat-label">Impegno e Dedizione</div></div>
+    </div>
+    <section class="section">
+        <div class="section-title"><h2>I Nostri Dipartimenti</h2></div>
+        <div class="cards">
+            <div class="card">
+                <div class="card-icon"><i class="fas fa-stethoscope"></i></div>
+                <h3>Prenotazioni Visite</h3>
+                <p>Prenota visite specialistiche ed esami diagnostici.</p>
+                <span class="link" onclick="mostraPagina('prenotazioni')">Accedi all'agenda →</span>
+            </div>
+            <div class="card">
+                <div class="card-icon"><i class="fas fa-pills"></i></div>
+                <h3>Ordine Farmacia</h3>
+                <p>Ordina farmaci e prodotti sanitari online.</p>
+                <span class="link" onclick="mostraPagina('ordine')">Ordina ora →</span>
+            </div>
+            <div class="card">
+                <div class="card-icon"><i class="fas fa-list"></i></div>
+                <h3>Listino Prezzi</h3>
+                <p>Consulta il tariffario completo dei servizi.</p>
+                <span class="link" onclick="mostraPagina('farmacia')">Vedi prezzi →</span>
+            </div>
+        </div>
+    </section>
+    <section class="section" style="padding-top:0;padding-bottom:40px;">
+        
+
+<div style="max-width:800px;margin:0 auto;background:#fff;border:1px solid #e2e8f0;border-left:4px solid #c8102e;border-radius:12px;padding:18px 22px;color:#64748b;font-size:0.9rem;line-height:1.6;">
+            <strong style="color:#0f172a;display:block;margin-bottom:6px;"><i class="fas fa-info-circle" style="color:#c8102e;"></i> Disclaimer</strong>
+            Questo sito è sviluppato esclusivamente a scopi di <strong>intrattenimento</strong> per un gioco di <strong>Role Play (RP)</strong>.
+            Tutti i contenuti, servizi, prezzi e riferimenti presenti sono <strong>fittizi</strong> e non hanno alcun valore reale.
+            Non si tratta di un sito ufficiale della Croce Rossa Italiana né di alcun ente pubblico o sanitario.
+        </div>
+    </section>
+</div>
+
+<!-- PRENOTAZIONI -->
+<div id="page-prenotazioni" class="page">
+    <section class="section" style="background:#f8fafc; min-height:80vh;">
+        <div class="section-title"><h2>Prenota un Servizio</h2><p>Compila il modulo per richiedere visite o certificati.</p></div>
+        <div class="prenota-layout" style="display:grid;grid-template-columns:minmax(280px,360px) 1fr;gap:28px;max-width:1100px;margin:0 auto;align-items:start;">
+            <div class="prenota-info-col" style="display:flex;flex-direction:column;gap:18px;">
+                <div style="background:#fff;border-radius:16px;border:1px solid #e2e8f0;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.05);">
+                    <div style="background:#5865F2;color:#fff;padding:14px 18px;font-weight:700;font-size:1rem;display:flex;align-items:center;gap:10px;"><i class="fab fa-discord"></i> Come trovare il tuo ID Discord</div>
+                    <div style="padding:16px 18px;">
+                        <ol style="margin:0;padding-left:18px;color:#334155;font-size:0.9rem;line-height:1.55;display:flex;flex-direction:column;gap:10px;">
+                            <li>Apri <strong>Discord</strong> (app o browser).</li>
+                            <li>Vai su <strong>Impostazioni utente</strong> (ingranaggio in basso a sinistra).</li>
+                            <li>Nella sezione <strong>Avanzate</strong>, attiva <strong>Modalità sviluppatore</strong>.</li>
+                            <li>Chiudi le impostazioni, clicca col <strong>tasto destro</strong> sul tuo nome e scegli <strong>Copia ID utente</strong>.</li>
+                            <li>Incolla l'ID nel campo Discord del modulo.</li>
+                        </ol>
+                        <p style="margin:12px 0 0;color:#64748b;font-size:0.82rem;">Su mobile: Impostazioni → Aspetto → Modalità sviluppatore, poi tieni premuto sul profilo → Copia ID utente.</p>
+                    </div>
+                </div>
+                <div style="background:#fff;border-radius:16px;border:1px solid #e2e8f0;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.05);">
+                    <div style="background:#c8102e;color:#fff;padding:14px 18px;font-weight:700;font-size:1rem;display:flex;align-items:center;gap:10px;"><i class="fas fa-gun"></i> Licenza Porto d'Armi</div>
+                    <div style="padding:16px 18px;"><ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:12px;color:#334155;font-size:0.9rem;line-height:1.5;">
+                        <li style="display:flex;gap:10px;"><span style="color:#c8102e;font-weight:700;">●</span><span>Effettuare la richiesta in Questura Polizia di stato e attendere 24h (OOC). Presentarsi in sede <strong>SOLO DOPO AVER ESEGUITO QUESTA PRENOTAZIONE</strong>.</span></li>
+                        <li style="display:flex;gap:10px;"><span style="color:#c8102e;font-weight:700;">●</span><span>Presentarsi alla reception e richiedere il medico che ha confermato la prenotazione.</span></li>
+                        <li style="display:flex;gap:10px;"><span style="color:#c8102e;font-weight:700;">●</span><span>Dopo 24h dall'anamnestico effettuare il test balistico presso un'armeria di Roma.</span></li>
+                        <li style="display:flex;gap:10px;"><span style="color:#c8102e;font-weight:700;">●</span><span>Infine dopo 24h dal balistico presentarsi nuovamente in Questura per il rilascio.</span></li>
+                    </ul></div>
+                </div>
+                <div style="background:#fff;border-radius:16px;border:1px solid #e2e8f0;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.05);">
+                    <div style="background:#1e40af;color:#fff;padding:14px 18px;font-weight:700;font-size:1rem;display:flex;align-items:center;gap:10px;"><i class="fas fa-balance-scale"></i> Pulizia Fedina Penale</div>
+                    <div style="padding:16px 18px;"><ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:12px;color:#334155;font-size:0.9rem;line-height:1.5;">
+                        <li style="display:flex;gap:10px;"><span style="color:#1e40af;font-weight:700;">●</span><span>Contattare un avvocato regolarmente iscritto all'albo.</span></li>
+                        <li style="display:flex;gap:10px;"><span style="color:#1e40af;font-weight:700;">●</span><span>Se necessario, <strong>prenotare il Test Attitudinale</strong> con questo modulo, presentarsi in reception e richiedere il medico.</span></li>
+                    </ul></div>
+                </div>
+            </div>
+            <div class="form-wrapper" style="margin:0;max-width:none;">
+            <div class="form-header"><h2>📅 Modulo di Prenotazione</h2><p style="opacity:0.9;font-size:0.95rem;">Croce Rossa Italiana</p></div>
+            <div class="form-body">
+                <label>Nome e Cognome *</label>
+                <input type="text" id="nome" placeholder="Es. Tony Stark">
+                <div class="row-form">
+                    <div><label>Data di Nascita *</label><input type="date" id="dataNascita"></div>
+                    <div><label>Telefono</label><input type="tel" id="telefono" placeholder="3331234567"></div>
+                </div>
+                <label>Discord ID (Obbligatorio)</label>
+                <input type="text" id="discordId" placeholder="1475551757882383878">
+                <div class="row-form">
+                    <div><label>Data Richiesta *</label><input type="date" id="dataRichiesta"></div>
+                    <div>
+                        <label>Fascia Oraria *</label>
+                        <select id="fasciaOraria">
+                            <option value="">Seleziona...</option>
+                            <option>08:00 - 10:00</option><option>10:00 - 12:00</option><option>12:00 - 14:00</option>
+                            <option>14:00 - 16:00</option><option>16:00 - 18:00</option><option>18:00 - 20:00</option>
+                            <option>20:00 - 22:00</option><option value="Altro">Altro</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="altro-box" id="altraFasciaBox"><label>Specifica fascia</label><input type="text" id="altraFascia"></div>
+                <label>Servizio Richiesto *</label>
+                <select id="servizio">
+                    <option value="">Seleziona...</option>
+                    <option>Visita Medica</option><option>Medicazione</option><option>Colloquio</option>
+                    <option>Controllo</option><option>Visita Psicologica</option><option>Test Attitudinale</option>
+                    <option>Certificato Anamnestico</option><option value="Altro">Altro</option>
+                </select>
+                <div class="altro-box" id="altroServizioBox"><label>Specifica servizio</label><input type="text" id="altroServizio"></div>
+                <label>Note</label><textarea id="note" rows="3"></textarea>
+                <button class="btn-invia" id="btnInvia">📤 Invia Prenotazione</button>
+<div class="status-box" id="statusPrenota"></div>
+                
+
+<div class="status-box" id="statusOrdine"></div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<!-- LISTINO PREZZI -->
+<div id="page-farmacia" class="page">
+    <section class="section prezzi-section">
+        <div class="section-title"><h2>Listino Prezzi</h2></div>
+        <div class="prezzo-categoria">
+            <div class="prezzo-header"><i class="fas fa-file-medical"></i> Certificati Anamnestici</div>
+            <div class="prezzo-item"><div class="prezzo-nome">Porto d'armi - Difesa personale<small>Obbligatorio Prelievo Ematico (+1.000€)</small></div><div class="prezzo-valore">7.000€</div></div>
+            <div class="prezzo-item"><div class="prezzo-nome">Concorso Pubblico<small>Prelievo ematico obbligatorio</small></div><div class="prezzo-valore">1.000€</div></div>
+            <div class="prezzo-item"><div class="prezzo-nome">Idoneità lavorativa<small>Obbligatorio Prelievo Ematico (+1.000€)</small></div><div class="prezzo-valore">7.000€</div></div>
+            <div class="prezzo-item"><div class="prezzo-nome">Test Attitudinali<small>Obbligatorio Prelievo Ematico (+1.000€)</small></div><div class="prezzo-valore">8.000€</div></div>
+        </div>
+        <div class="prezzo-categoria">
+            <div class="prezzo-header dark"><i class="fas fa-hospital"></i> Ospedale</div>
+            <div class="prezzo-item"><div class="prezzo-nome">Visita Medica</div><div class="prezzo-valore">3.500€</div></div>
+            <div class="prezzo-item"><div class="prezzo-nome">Certificato medico</div><div class="prezzo-valore">10.000€</div></div>
+            <div class="prezzo-item"><div class="prezzo-nome">Visita medica d'urgenza</div><div class="prezzo-valore free">FREE</div></div>
+            <div class="prezzo-item"><div class="prezzo-nome">Visita a domicilio</div><div class="prezzo-valore">4.500€</div></div>
+            <div class="prezzo-item"><div class="prezzo-nome">Visita Fisioterapica</div><div class="prezzo-valore">1.000€</div></div>
+            <div class="prezzo-item"><div class="prezzo-nome">Visita Psicologica</div><div class="prezzo-valore">5.000€</div></div>
+            <div class="prezzo-item"><div class="prezzo-nome">Esami radiologici</div><div class="prezzo-valore">1.000€</div></div>
+            <div class="prezzo-item"><div class="prezzo-nome">Prelievo ematico</div><div class="prezzo-valore">1.000€</div></div>
+            <div class="prezzo-item"><div class="prezzo-nome">Somministrazione Destrosio / Fisiologica</div><div class="prezzo-valore">250€</div></div>
+            <div class="prezzo-item"><div class="prezzo-nome">Somministrazione Propofol / Naloxone</div><div class="prezzo-valore">1.000€</div></div>
+            <div class="prezzo-item"><div class="prezzo-nome">Somministrazione Fentanyl</div><div class="prezzo-valore">5.000€</div></div>
+            <div class="prezzo-item"><div class="prezzo-nome">Trattamenti / Chemioterapia</div><div class="prezzo-valore">1.000€</div></div>
+        </div>
+        <div class="prezzo-categoria">
+            <div class="prezzo-header blue"><i class="fas fa-syringe"></i> Area Chirurgica</div>
+            <div class="prezzo-item"><div class="prezzo-nome">Intervento programmato<small>+ Prelievo 1.000€</small></div><div class="prezzo-valore">7.500€</div></div>
+            <div class="prezzo-item"><div class="prezzo-nome">Intervento d'urgenza<small>+ Prelievo 1.000€</small></div><div class="prezzo-valore">1.000€</div></div>
+            <div class="prezzo-item"><div class="prezzo-nome">Chirurgia plastica</div><div class="prezzo-valore">1.500.000€</div></div>
+        </div>
+        <div class="prezzo-categoria">
+            <div class="prezzo-header green"><i class="fas fa-pills"></i> Farmaci senza ricetta</div>
+            <div class="prezzo-item"><div class="prezzo-nome">OKI, Benagol, Brufen, Tachipirina, Pantorc, Ketorolac, Connettivina, Betadine, Voltaren, Lasix, Rocephin, Bentelan, Clorfenamina</div><div class="prezzo-valore">500€</div></div>
+        </div>
+        <div class="prezzo-categoria">
+            <div class="prezzo-header"><i class="fas fa-prescription"></i> Farmaci con ricetta</div>
+            <div class="prezzo-item"><div class="prezzo-nome">Cardioaspirina, Augmentin, Cipralex, Xanax, Clexane, Adrenalina, Gabapentin</div><div class="prezzo-valore">800€</div></div>
+            <div class="prezzo-item"><div class="prezzo-nome">Morfina</div><div class="prezzo-valore">30.000€</div></div>
+            <div class="prezzo-item"><div class="prezzo-nome">Bende</div>
+
+<div class="status-box" id="statusPrenota"></div>
+            </div>
+        </div>
+        </div>
+    </section>
+</div>
+
+<!-- ORDINE FARMACIA -->
+<div id="page-ordine" class="page">
+    <section class="section" style="background:#f8fafc; min-height:80vh;">
+        <div class="section-title"><h2>Ordine Farmacia</h2><p>Seleziona i prodotti e invia l'ordine.</p></div>
+        <div class="form-wrapper">
+            <div class="form-header" style="background:#15803d;"><h2>💊 Ordine Farmaci</h2><p style="opacity:0.9;">Croce Rossa Italiana - Farmacia</p></div>
+            <div class="form-body">
+                <label>Nome e Cognome *</label>
+                <input type="text" id="ordineNome" placeholder="Es. Tony Stark">
+                <div class="row-form">
+                    <div><label>Telefono</label><input type="tel" id="ordineTelefono" placeholder="3331234567"></div>
+                    <div><label>Discord ID (opzionale)</label><input type="text" id="ordineDiscord" placeholder="1475551757882383878"></div>
+                </div>
+                <label>Note / Indirizzo consegna</label>
+                <textarea id="ordineNote" rows="2" placeholder="Eventuali note..."></textarea>
+
+                <div class="categoria-title">Farmaci senza ricetta (500€ cad.)</div>
+                <div class="farmaci-grid" id="farmaciSenza"></div>
+
+                <div class="categoria-title">Farmaci con ricetta (800€ cad.)</div>
+                <div class="farmaci-grid" id="farmaciCon"></div>
+
+                <div class="categoria-title">Altri prodotti</div>
+                <div class="farmaci-grid" id="farmaciAltri"></div>
+
+                <div class="totale-box">
+                    <div>Totale ordine</div>
+                    <span id="totaleOrdine">0€</span>
+                </div>
+
+                <button class="btn-invia" id="btnOrdine" style="background:#15803d;">📤 Invia Ordine</button>
+                
+
+<div class="section-title"><h2>Contatti</h2><p>Emergenze: <strong style="color:#c8102e;">118</strong></p></div>
+        <p style="color:#64748b;line-height:2;"><strong>Croce Rossa Italiana</strong><br>Sistema Prenotazioni e Farmacia attivo 24/7</p>
+    </section>
+</div>
+
+<!-- ========== LOGIN AREA PERSONALE ========== -->
+<div id="page-login" class="page">
+    <div class="login-page">
+        <div class="login-card">
+            <img class="login-logo" src="https://upload.wikimedia.org/wikipedia/it/4/4a/Emblema_CRI.svg" alt="Croce Rossa Italiana">
+            <h2>Area Personale</h2>
+            <p class="subtitle">Accesso riservato al personale CRI</p>
+
+            <!-- Animazione Holter / ECG -->
+            <div class="ecg-box">
+                <img src="https://github.com/Damy97d/Prenotazioni-Cri/blob/main/holter.gif?raw=true" alt="Holter ECG" class="holter-gif">
+                <span class="ecg-label">HOLTER • ECG</span>
+            </div>
+
+            <label>Nome Utente</label>
+            <input type="text" id="loginUser" placeholder="Nome utente" autocomplete="username">
+
+            <label>Password</label>
+            <div class="pwd-wrap"><input type="password" id="loginPass" placeholder="Password" autocomplete="current-password"><button type="button" class="pwd-toggle" onclick="togglePassword('loginPass', this)" title="Mostra/nascondi" aria-label="Mostra password"><i class="fas fa-eye"></i></button></div>
+
+            <button class="btn-login" onclick="effettuaLogin()" id="btnLoginArea">Accedi</button>
+            <div class="login-error" id="loginError">Credenziali non valide</div>
+            <button type="button" onclick="mostraPagina('cambio-password')" style="margin-top:16px;background:transparent;border:1px solid #475569;color:#cbd5e1;padding:10px 14px;border-radius:8px;cursor:pointer;font-weight:600;width:100%;font-size:0.9rem;">
+              <i class="fas fa-key"></i> Cambia password
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ========== CAMBIO PASSWORD ========== -->
+
+
+</main>
+<footer>
+        <p>© 2026 Sistema Gestione Fatturato Farmacia - Croce Rossa Italiana By @Damy_97 #T.Stark</p>
+    </footer>
+
+<script>
+(function () {
+  var allowed = { home:1, prenotazioni:1, farmacia:1, ordine:1, login:1 };
+  function mostraPagina(id) {
+    if (!allowed[id]) id = "home";
+    document.querySelectorAll(".page").forEach(function (p) {
+      p.classList.remove("active");
+      p.style.display = "none";
+    });
+    var el = document.getElementById("page-" + id);
+    if (!el) el = document.getElementById("page-home");
+    if (el) {
+      el.classList.add("active");
+      el.style.display = "block";
+    }
+    try { window.scrollTo({ top: 0, behavior: "smooth" }); } catch (e) { window.scrollTo(0, 0); }
+  }
+  window.mostraPagina = mostraPagina;
+  window.apriAreaPersonale = function () { mostraPagina("login"); };
+  window.effettuaLogin = function () {
+    alert("Area personale non disponibile in questa versione pubblica.");
+    return false;
+  };
+  window.loginAreaPersonale = window.effettuaLogin;
+  window.eseguiLogin = window.effettuaLogin;
+  window.doLogin = window.effettuaLogin;
+  window.loginOperatore = window.effettuaLogin;
+  window.togglePassword = function (id) {
+    var input = document.getElementById(id);
+    if (!input) return;
+    input.type = input.type === "password" ? "text" : "password";
+  };
+  document.addEventListener("DOMContentLoaded", function () {
+    mostraPagina("home");
+    document.querySelectorAll("#page-login form, form[id*='login' i]").forEach(function (f) {
+      f.addEventListener("submit", function (e) {
+        e.preventDefault();
+        alert("Area personale non disponibile in questa versione pubblica.");
+      });
+    });
+    var btn = document.getElementById("btnLogin");
+    if (btn) btn.addEventListener("click", function (e) {
+      e.preventDefault();
+      alert("Area personale non disponibile in questa versione pubblica.");
+    });
+  });
+})();
+</script>
+
+
+<script>
+/* Aggiornamento automatico versione (come sito completo) */
+(function () {
+  var VERSION_URL = "version.json";
+  var STORAGE_KEY = "cri_public_site_version";
+  function checkVersion() {
+    fetch(VERSION_URL + "?_=" + Date.now(), { cache: "no-store" })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (data) {
+        if (!data || !data.version) return;
+        var current = String(data.version);
+        var stored = "";
+        try { stored = localStorage.getItem(STORAGE_KEY) || ""; } catch (e) {}
+        if (stored && stored !== current) {
+          try { localStorage.setItem(STORAGE_KEY, current); } catch (e) {}
+          var url = location.href.split("#")[0];
+          var sep = url.indexOf("?") >= 0 ? "&" : "?";
+          location.replace(url.split("?")[0] + sep + "v=" + encodeURIComponent(current) + "&_=" + Date.now());
+          return;
+        }
+        if (!stored) {
+          try { localStorage.setItem(STORAGE_KEY, current); } catch (e) {}
+        }
+      })
+      .catch(function () {});
+  }
+  // a ogni apertura
+  checkVersion();
+  // opzionale: ricontrolla ogni 5 minuti se la tab resta aperta
+  setInterval(checkVersion, 5 * 60 * 1000);
+})();
+
+
+
+// ===== PRENOTAZIONI CONDIVISE (Google Sheet) =====
+const PRENORD_SHEET_URL = "https://script.google.com/macros/s/AKfycbx6zwuR1Mv9035NR-jpgeCsSbMu98PjvrDoAuvJr5e_lTV7Mus4UW9XaSnWHkA1ILVbmA/exec";
+const PRENORD_SECRET = "CRI_PrenOrd_Stark_2026";
+
+async function prenOrdSheetCall(payload) {
+  if (!PRENORD_SHEET_URL || !String(PRENORD_SHEET_URL).trim()) {
+    throw new Error("PRENORD_SHEET_URL non configurato");
+  }
+  const body = Object.assign({ secret: PRENORD_SECRET }, payload || {});
+  const res = await fetch(PRENORD_SHEET_URL, {
+    method: "POST",
+    headers: { "Content-Type": "text/plain;charset=utf-8" },
+    body: JSON.stringify(body)
+  });
+  const data = await res.json().catch(function(){ return null; });
+  if (!data) throw new Error("Risposta Sheet non valida");
+  if (data.ok === false) throw new Error(data.error || "Errore salvataggio Google Sheet");
+  return data;
+}
+
+function getPrenotazioniSalvate() {
+  try { return JSON.parse(localStorage.getItem("prenotazioniCRI") || "[]"); }
+  catch (e) { return []; }
+}
+
+function setPrenotazioniLocal(lista) {
+  try { localStorage.setItem("prenotazioniCRI", JSON.stringify(lista || [])); }
+  catch (e) {}
+}
+
+async function salvaPrenotazione(p) {
+  const item = Object.assign({
+    id: p.id || (Date.now() + "-" + Math.random().toString(36).slice(2, 8)),
+    stato: p.stato || "nuova"
+  }, p);
+
+  const lista = getPrenotazioniSalvate();
+  lista.unshift(item);
+  setPrenotazioniLocal(lista);
+
+  // Salvataggio condiviso nel Google Sheet
+  await prenOrdSheetCall({
+    action: "add_prenotazione",
+    id: item.id,
+    nome: item.nome,
+    dataNascita: item.dataNascita || "",
+    telefono: item.telefono || "",
+    discord: item.discord || "",
+    data: item.data || "",
+    fascia: item.fascia || "",
+    servizio: item.servizio || "",
+    note: item.note || "",
+    ricevuta: item.ricevuta || new Date().toISOString(),
+    stato: item.stato || "nuova"
+  });
+
+  return item;
+}
+
+
+// ===== PRENOTAZIONI =====
+document.getElementById('fasciaOraria').addEventListener('change', function() {
+    document.getElementById('altraFasciaBox').style.display = this.value === 'Altro' ? 'block' : 'none';
+});
+document.getElementById('servizio').addEventListener('change', function() {
+    document.getElementById('altroServizioBox').style.display = this.value === 'Altro' ? 'block' : 'none';
+});
+document.getElementById('dataRichiesta').valueAsDate = new Date();
+
+document.getElementById('btnInvia').addEventListener('click', async () => {
+    const nome = document.getElementById('nome').value.trim();
+    const dataNascita = document.getElementById('dataNascita').value;
+    const telefono = document.getElementById('telefono').value.trim() || '//';
+    const discordIdRaw = document.getElementById('discordId').value.trim();
+    let dataRichiesta = document.getElementById('dataRichiesta').value;
+    let fascia = document.getElementById('fasciaOraria').value;
+    let servizio = document.getElementById('servizio').value;
+    const note = document.getElementById('note').value.trim() || 'Nessuna nota.';
+
+    if (!nome || !dataNascita || !dataRichiesta || !fascia || !servizio) { alert('Compila i campi obbligatori'); return; }
+    if (fascia === 'Altro') fascia = document.getElementById('altraFascia').value.trim() || 'Non specificata';
+    if (servizio === 'Altro') servizio = 'Altro: ' + (document.getElementById('altroServizio').value.trim() || 'N/D');
+
+    const formatDate = d => { const [y,m,day] = d.split('-'); return `${day}/${m}/${y}`; };
+    const now = new Date();
+    const dataOra = now.toLocaleDateString('it-IT') + ' ' + now.toLocaleTimeString('it-IT', {hour:'2-digit',minute:'2-digit'});
+
+    const params = new URLSearchParams({ nome, data: formatDate(dataRichiesta), fascia, servizio, note, discord: discordIdRaw || '' });
+    const linkConferma = `${CONFERMA_PAGE}?${params}`;
+
+    let mentions = `<@&963862795890360360> <@&963862193655414805> <@&1099742102184804428> <@&963862191663116318>`;
+    if (servizio === 'Test Attitudinale' || servizio === 'Visita Psicologica') mentions = `<@&1059959831143919717>`;
+    else if (servizio === 'Colloquio') mentions = `<@&1498075053294620704> <@&1099742102184804428> <@&1312723262270083133>`;
+
+    const status = document.getElementById('statusPrenota');
+    const btn = document.getElementById('btnInvia');
+    btn.disabled = true; status.style.display = 'block'; status.style.background = '#fff3cd'; status.innerHTML = '⏳ Invio...';
+
+    try {
+        const res = await fetch(WEBHOOK_URL, {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                content: mentions,
+                embeds: [{
+                    title: "📅 Nuova Prenotazione Ricevuta",
+                    description: `Richiesta dal portale.\n\n[✅ **Gestisci Prenotazione**](${linkConferma})`,
+                    color: 0xc8102e,
+                    fields: [
+                        { name: "👤 Paziente", value: nome, inline: true },
+                        { name: "🎂 Data Nascita", value: formatDate(dataNascita), inline: true },
+                        { name: "📞 Telefono", value: telefono, inline: true },
+                        { name: "💬 Discord", value: discordIdRaw ? `<@${discordIdRaw}>` : 'Non fornito', inline: true },
+                        { name: "📅 Data", value: formatDate(dataRichiesta), inline: true },
+                        { name: "⏰ Fascia", value: fascia, inline: true },
+                        { name: "⚕️ Servizio", value: servizio, inline: false },
+                        { name: "📝 Note", value: note, inline: false }
+                    ],
+                    footer: { text: `Croce Rossa • ${dataOra}` }
+                }]
+            })
+        });
+        if (res.ok) {
+            // Salva anche in Area Personale (oltre a Discord)
+            await salvaPrenotazione({
+                nome: nome,
+                data: formatDate(dataRichiesta),
+                fascia: fascia,
+                servizio: servizio,
+                note: note,
+                discord: discordIdRaw || '',
+                telefono: telefono,
+                dataNascita: formatDate(dataNascita),
+                ricevuta: dataOra
+            });
+
+            status.style.background = '#d4edda'; status.innerHTML = '✅ Prenotazione inviata!';
+            ['nome','dataNascita','telefono','discordId','note'].forEach(id => document.getElementById(id).value = '');
+            document.getElementById('fasciaOraria').value = ''; document.getElementById('servizio').value = '';
+        } else throw new Error('Errore invio');
+    } catch(e) { status.style.background = '#f8d7da'; status.innerHTML = '❌ ' + e.message; }
+    btn.disabled = false;
+});
+
+</script>
+
+</body>
+</html>
